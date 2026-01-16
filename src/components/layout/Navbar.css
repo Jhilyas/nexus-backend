@@ -1,0 +1,334 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-sticky);
+    padding: var(--space-md) 0;
+    transition: all var(--transition-base);
+}
+
+.navbar.scrolled {
+    background: rgba(10, 10, 18, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--nexus-glass-border);
+    padding: var(--space-sm) 0;
+}
+
+.navbar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 var(--space-xl);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-xl);
+}
+
+/* Logo */
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    transition: transform var(--transition-base);
+}
+
+.navbar-logo:hover {
+    transform: scale(1.02);
+}
+
+.logo-icon {
+    position: relative;
+    width: 36px;
+    height: 36px;
+}
+
+.logo-core {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: var(--nexus-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.6);
+}
+
+.logo-orbit {
+    position: absolute;
+    inset: 0;
+    border: 2px solid transparent;
+    border-top-color: var(--nexus-aurora-1);
+    border-right-color: var(--nexus-aurora-2);
+    border-radius: 50%;
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.logo-text {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: var(--nexus-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.05em;
+}
+
+/* Navigation Links */
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.nav-link {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--nexus-text-secondary);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--nexus-primary);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-base);
+}
+
+.nav-link:hover {
+    color: var(--nexus-text-primary);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 20px;
+}
+
+.nav-link.active {
+    color: var(--nexus-text-primary);
+}
+
+/* Actions */
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+/* Language Switcher */
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--nexus-glass);
+    border: 1px solid var(--nexus-glass-border);
+    border-radius: var(--radius-full);
+}
+
+.lang-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--nexus-text-tertiary);
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.lang-btn:hover {
+    color: var(--nexus-text-secondary);
+}
+
+.lang-btn.active {
+    background: var(--nexus-primary);
+    color: white;
+}
+
+/* User Menu */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--nexus-primary);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+/* Mobile Menu */
+.mobile-menu-btn {
+    display: none;
+    padding: var(--space-sm);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 24px;
+}
+
+.hamburger span {
+    display: block;
+    height: 2px;
+    background: var(--nexus-text-primary);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-base);
+}
+
+.hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .navbar-links {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        padding: var(--space-lg);
+        background: rgba(10, 10, 18, 0.95);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--nexus-glass-border);
+        transform: translateY(-120%);
+        opacity: 0;
+        transition: all var(--transition-base);
+        pointer-events: none;
+    }
+
+    .navbar-links.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .nav-link {
+        width: 100%;
+        text-align: center;
+        padding: var(--space-md);
+    }
+
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .language-switcher {
+        display: none;
+    }
+}
+
+/* Music Controls in Navbar */
+.navbar-music-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: var(--space-xs);
+}
+
+.music-control-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--nexus-glass-border);
+    background: var(--nexus-glass);
+    color: var(--nexus-text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+    backdrop-filter: blur(10px);
+}
+
+.music-control-btn:hover {
+    background: var(--nexus-primary);
+    color: white;
+    border-color: var(--nexus-primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.5);
+}
+
+.music-control-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+@media (max-width: 768px) {
+    .navbar-music-controls {
+        display: none;
+    }
+}
+
+/* Music Switch Button */
+.music-switch-btn {
+    position: relative;
+}
+
+.music-switch-btn:hover svg {
+    animation: rotate-switch 0.6s ease-in-out;
+}
+
+@keyframes rotate-switch {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

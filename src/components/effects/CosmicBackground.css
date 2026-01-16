@@ -1,0 +1,38 @@
+.cosmic-background {
+    position: fixed;
+    inset: 0;
+    z-index: -10;
+    background: var(--nexus-void);
+    overflow: hidden;
+}
+
+.cosmic-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.cosmic-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 10%, rgba(102, 126, 234, 0.1) 0%, transparent 40%),
+        radial-gradient(ellipse at 85% 90%, rgba(118, 75, 162, 0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, rgba(240, 147, 251, 0.03) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+/* Scanline effect for extra depth */
+.cosmic-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 0, 0, 0.03) 2px,
+            rgba(0, 0, 0, 0.03) 4px);
+    pointer-events: none;
+    opacity: 0.3;
+}

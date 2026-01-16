@@ -1,0 +1,28 @@
+{
+  "name": "nexus-backend",
+  "version": "1.0.0",
+  "description": "NEXUS Platform Backend - AI-Powered Educational Orientation",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "education",
+    "ai",
+    "orientation",
+    "morocco"
+  ],
+  "author": "NEXUS",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "openai": "^6.16.0"
+  }
+}
