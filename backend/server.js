@@ -717,14 +717,14 @@ app.get('/api/stats', (req, res) => {
 // START SERVER
 // ═══════════════════════════════════════════════════════════════
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`
   ╔═══════════════════════════════════════════════════════════════╗
   ║                                                               ║
   ║   🌌  NEXUS BACKEND SERVER v1.0.0                             ║
   ║   "Where every future begins."                                ║
   ║                                                               ║
-  ║   Server: http://localhost:${PORT}                              ║
+  ║   Server: http://0.0.0.0:${PORT}                                ║
   ║   Database: SQLite (nexus.db)                                 ║
   ║   OpenAI: ${process.env.OPENAI_API_KEY ? '✅ Configured' : '❌ Not configured'}                                  ║
   ║                                                               ║
