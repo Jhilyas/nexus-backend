@@ -268,6 +268,90 @@
     gap: var(--space-md);
 }
 
+/* Success Rate Badge */
+.success-rate-badge {
+    margin-left: auto;
+    padding: var(--space-xs) var(--space-md);
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--nexus-success);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Skills Section */
+.step-skills {
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: var(--radius-md);
+}
+
+.skills-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--nexus-aurora-1);
+    margin-bottom: var(--space-sm);
+}
+
+.skills-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+.skill-tag {
+    padding: 4px 12px;
+    background: var(--nexus-glass);
+    border: 1px solid var(--nexus-glass-border);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    color: var(--nexus-text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.skill-tag:hover {
+    border-color: var(--nexus-aurora-1);
+    color: var(--nexus-aurora-1);
+}
+
+/* Tips Section */
+.step-tips {
+    margin-bottom: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(245, 158, 11, 0.05);
+    border-radius: var(--radius-md);
+    border-left: 3px solid #f59e0b;
+}
+
+.tips-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f59e0b;
+    margin-bottom: var(--space-sm);
+}
+
+.tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tip-item {
+    font-size: 0.875rem;
+    color: var(--nexus-text-secondary);
+    padding: var(--space-xs) 0;
+    padding-left: var(--space-md);
+    position: relative;
+}
+
+.tip-item::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #f59e0b;
+}
+
 /* Insights */
 .step-insights {
     padding: var(--space-lg);

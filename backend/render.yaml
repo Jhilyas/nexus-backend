@@ -10,8 +10,10 @@ services:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
-        value: https://nexus-morocco-platform.netlify.app
+        value: https://nexus-morocco.com
       - key: JWT_SECRET
         generateValue: true
+      - key: GROQ_API_KEY
+        sync: false
       - key: OPENAI_API_KEY
         sync: false

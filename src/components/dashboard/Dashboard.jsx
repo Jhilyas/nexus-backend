@@ -52,7 +52,7 @@ const translations = {
     }
 }
 
-const Dashboard = ({ onToggleMentor, language = 'fr' }) => {
+const Dashboard = ({ onToggleMentor, language = 'fr', setCurrentPage }) => {
     const [progress, setProgress] = useState(0)
     const t = translations[language]
     const isRTL = language === 'ar'
@@ -96,8 +96,8 @@ const Dashboard = ({ onToggleMentor, language = 'fr' }) => {
 
     const quickActions = [
         { label: t.mentor, icon: '🧠', action: onToggleMentor },
-        { label: t.simulate, icon: '⏱️', action: () => { } },
-        { label: t.explore, icon: '🔮', action: () => { } },
+        { label: t.simulate, icon: '⏱️', action: () => setCurrentPage && setCurrentPage('timeline') },
+        { label: t.explore, icon: '🔮', action: () => setCurrentPage && setCurrentPage('explore') },
         { label: t.settings, icon: '⚙️', action: () => { } }
     ]
 

@@ -143,6 +143,27 @@
     color: var(--nexus-text-primary);
 }
 
+/* Voice Mode Button */
+.voice-mode-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--nexus-aurora-1), var(--nexus-aurora-2));
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+.voice-mode-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+}
+
 /* Messages */
 .mentor-messages {
     flex: 1;

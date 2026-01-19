@@ -1,13 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
+import { ai } from '../../services/supabase'
 import './AIMentor.css'
 
 const translations = {
     fr: {
-        title: 'SAGE',
+        title: 'NEXUS AI',
         subtitle: 'Votre Guide Personnel IA',
         placeholder: 'Posez votre question...',
         send: 'Envoyer',
-        thinking: 'SAGE réfléchit...',
+        thinking: 'NEXUS AI réfléchit...',
         modes: {
             mentor: '🎓 Mentor',
             friend: '🤝 Ami',
@@ -20,15 +21,15 @@ const translations = {
             'Quel métier correspond à mon profil scientifique ?',
             'Explique-moi les filières après le bac au Maroc'
         ],
-        greeting: 'Bonjour ! Je suis SAGE, votre mentor IA personnel propulsé par ChatGPT. Je suis spécialisé dans l\'orientation éducative au Maroc. Posez-moi vos questions sur les écoles, les filières, les concours ou votre avenir professionnel !',
+        greeting: 'Bonjour ! Je suis NEXUS AI, créé par Imane Taouss Badaoui. Je suis spécialisé dans l\'orientation éducative au Maroc. Posez-moi vos questions sur les écoles, les filières, les concours ou votre avenir professionnel !',
         errorMessage: 'Désolé, une erreur s\'est produite. Veuillez réessayer.'
     },
     ar: {
-        title: 'SAGE',
+        title: 'NEXUS AI',
         subtitle: 'مرشدك الشخصي بالذكاء الاصطناعي',
         placeholder: 'اطرح سؤالك...',
         send: 'إرسال',
-        thinking: 'SAGE يفكر...',
+        thinking: 'NEXUS AI يفكر...',
         modes: {
             mentor: '🎓 مرشد',
             friend: '🤝 صديق',
@@ -41,15 +42,15 @@ const translations = {
             'أي مهنة تناسب ملفي العلمي؟',
             'اشرح لي المسارات بعد البكالوريا في المغرب'
         ],
-        greeting: 'مرحبا! أنا SAGE، مرشدك الذكي الشخصي المدعوم بـ ChatGPT. أنا متخصص في التوجيه التعليمي في المغرب. اسألني عن المدارس، المسارات، المباريات أو مستقبلك المهني!',
+        greeting: 'مرحبا! أنا NEXUS AI، صنعتني إيمان طاوس بادوي. أنا متخصص في التوجيه التعليمي في المغرب. اسألني عن المدارس، المسارات، المباريات أو مستقبلك المهني!',
         errorMessage: 'عذرا، حدث خطأ. يرجى المحاولة مرة أخرى.'
     },
     en: {
-        title: 'SAGE',
+        title: 'NEXUS AI',
         subtitle: 'Your Personal AI Guide',
         placeholder: 'Ask your question...',
         send: 'Send',
-        thinking: 'SAGE is thinking...',
+        thinking: 'NEXUS AI is thinking...',
         modes: {
             mentor: '🎓 Mentor',
             friend: '🤝 Friend',
@@ -62,7 +63,7 @@ const translations = {
             'Which career matches my scientific profile?',
             'Explain the paths after high school in Morocco'
         ],
-        greeting: 'Hello! I\'m SAGE, your personal AI mentor powered by ChatGPT. I specialize in educational guidance in Morocco. Ask me about schools, programs, exams, or your professional future!',
+        greeting: 'Hello! I\'m NEXUS AI, created by Imane Taouss Badaoui. I specialize in educational guidance in Morocco. Ask me about schools, programs, exams, or your professional future!',
         errorMessage: 'Sorry, an error occurred. Please try again.'
     }
 }
@@ -102,22 +103,8 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
         setIsTyping(true)
 
         try {
-            // Appel à l'API backend qui utilise ChatGPT
-            const response = await fetch('http://localhost:3001/api/ai/chat', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    message: input,
-                    mode: mode,
-                    personality: modePersonalities[mode],
-                    language: language,
-                    conversationHistory: messages.slice(-10) // Envoyer les 10 derniers messages pour le contexte
-                })
-            })
-
-            const data = await response.json()
+            // Appel à Supabase Edge Function (ai-chat)
+            const data = await ai.chat(input, messages.slice(-10), mode, language)
 
             if (data.success && data.response) {
                 setMessages(prev => [...prev, { role: 'assistant', content: data.response }])
@@ -131,6 +118,7 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
             setIsTyping(false)
         }
     }
+
 
     const handleSuggestion = (suggestion) => {
         setInput(suggestion)
@@ -174,6 +162,17 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
                                 </button>
                             ))}
                         </div>
+                        <button
+                            className="voice-mode-btn"
+                            onClick={() => {
+                                onClose();
+                                // Trigger voice mentor via global event
+                                window.dispatchEvent(new CustomEvent('openVoiceMentor'));
+                            }}
+                            title="Mode vocal"
+                        >
+                            🎤
+                        </button>
                         <button className="close-btn" onClick={onClose}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M18 6L6 18M6 6l12 12" />

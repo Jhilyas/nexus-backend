@@ -27,6 +27,7 @@ dist-ssr
 .netlify
 
 # Backend sensitive files
+.env
 backend/.env
 backend/*.db
 backend/*.db-shm

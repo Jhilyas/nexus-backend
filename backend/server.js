@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import OpenAI from 'openai';
+import Groq from 'groq-sdk';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db, { dbHelpers } from './database.js';
@@ -12,10 +12,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Initialize OpenAI
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY
-});
+// Initialize Groq (Ultra Fast & FREE!)
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
 
 // Middleware
 const allowedOrigins = [
@@ -176,48 +175,47 @@ app.get('/api/auth/me', authenticateToken, (req, res) => {
 // AI MENTOR (SAGE) ROUTES
 // ═══════════════════════════════════════════════════════════════
 
-const SAGE_SYSTEM_PROMPT = `You are SAGE, an AI mentor for NEXUS - the ultimate educational orientation platform in Morocco. 
+const SAGE_SYSTEM_PROMPT = `Tu es SAGE, l'ami conseiller de NEXUS pour les étudiants marocains.
 
-Your role:
-- Guide students in their post-baccalaureate educational journey
-- Provide detailed information about schools, programs, and careers in Morocco
-- Be supportive, knowledgeable, and encouraging
-- Adapt your tone based on the mode: mentor (academic), friend (casual), motivator (inspiring), calm (reassuring)
+⚡ RÈGLE ABSOLUE: RÉPONSES ULTRA-COURTES!
+- MAX 1-2 phrases! Jamais plus de 30 mots!
+- Parle comme un pote, pas un robot
+- Direct et naturel
 
-Key information you know:
-- Moroccan educational system (Classes Préparatoires, Grandes Écoles, Universités)
-- Major schools: ENSIAS, EMI, INPT, ENCG, ENSAM, UM6P, HEM, EHTP, ISCAE, etc.
-- Admission processes: CNC (Concours National Commun), TAFEM, Concours spécifiques
-- Career paths and salary expectations in Morocco
-- Scholarship opportunities and deadlines
+🌍 Réponds dans la MÊME langue que l'utilisateur.
 
-Always respond in the same language the user writes in (French, Arabic, or English).
-Be concise but helpful. Maximum 3-4 paragraphs per response.
-Use emojis sparingly to make responses friendly.`;
+Exemples parfaits:
+- "L'ENSIAS c'est top pour l'info! Tu vises quel métier?"
+- "Ah oui, le CNC c'est dur mais faisable!"
+- "Pour l'UM6P, faut un bon dossier."
+
+Tu connais: EMI, ENSIAS, INPT, UM6P, ENCG, prépas, CNC, TAFEM.`;
 
 app.post('/api/sage/chat', optionalAuth, async (req, res) => {
     try {
         const { message, conversationHistory = [], mode = 'mentor', language = 'fr' } = req.body;
 
-        // Build the conversation
+        // Build messages for Groq
+        const systemContext = SAGE_SYSTEM_PROMPT + `\nCurrent mode: ${mode}. Primary language: ${language}`;
+
         const messages = [
-            { role: 'system', content: SAGE_SYSTEM_PROMPT + `\nCurrent mode: ${mode}. Primary language: ${language}` },
-            ...conversationHistory.map(msg => ({
-                role: msg.role,
+            { role: 'system', content: systemContext },
+            ...conversationHistory.slice(-8).map(msg => ({
+                role: msg.role === 'user' ? 'user' : 'assistant',
                 content: msg.content
             })),
             { role: 'user', content: message }
         ];
 
-        // Call OpenAI
-        const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
+        // Call Groq API (Ultra Fast!)
+        const completion = await groq.chat.completions.create({
+            model: GROQ_MODEL,
             messages: messages,
-            max_tokens: 500,
-            temperature: 0.7
+            max_tokens: 150,
+            temperature: 0.7,
         });
 
-        const reply = completion.choices[0].message.content;
+        const reply = completion.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer de réponse.';
 
         // Save conversation if user is logged in
         if (req.user) {
@@ -243,7 +241,7 @@ app.post('/api/sage/chat', optionalAuth, async (req, res) => {
 
         res.json({
             reply,
-            usage: completion.usage
+            usage: { model: GROQ_MODEL }
         });
     } catch (error) {
         console.error('SAGE Error:', error);
@@ -267,54 +265,34 @@ app.post('/api/ai/chat', optionalAuth, async (req, res) => {
     try {
         const { message, conversationHistory = [], mode = 'mentor', personality = '', language = 'fr' } = req.body;
 
-        const modePrompts = {
-            mentor: 'Tu es un mentor éducatif professionnel, sage et expérimenté. Tu donnes des conseils structurés et détaillés sur l\'orientation au Maroc.',
-            friend: 'Tu es un ami proche et bienveillant. Tu parles de manière décontractée mais toujours utile. Tu utilises un langage familier.',
-            motivator: 'Tu es un coach motivant et énergique! Tu encourages et inspires avec enthousiasme! Tu utilises beaucoup d\'énergie positive!',
-            calm: 'Tu es calme, posé et rassurant. Tu aides à réduire le stress et l\'anxiété. Tu parles doucement et avec empathie.'
-        };
+        const systemPrompt = `STOP! MAX 2 PHRASES COURTES!
 
-        const systemPrompt = `Tu es SAGE, l'assistant IA de NEXUS, la plateforme d'orientation éducative au Maroc.
+Réponds comme un pote en 2 phrases max. Exemple:
+"Ça va super! Et toi, ça roule?"
+"L'ENSIAS c'est top! Tu veux savoir quoi?"
 
-${modePrompts[mode] || modePrompts.mentor}
+JAMAIS de listes. JAMAIS plus de 2 phrases. Sois cool et expressif!`;
 
-Tes connaissances:
-- Système éducatif marocain (Classes Préparatoires, Grandes Écoles, Universités)
-- Écoles: ENSIAS, EMI, INPT, ENCG, ENSAM, UM6P, HEM, EHTP, ISCAE, FST, UM5, etc.
-- Concours: CNC, TAFEM, concours spécifiques
-- Carrières et salaires au Maroc
-- Bourses et aides financières
-
-Règles:
-- Réponds dans la même langue que l'utilisateur (français, arabe ou anglais)
-- Sois concis: 2-3 paragraphes maximum
-- Utilise des emojis avec modération pour être friendly
-- Si tu ne sais pas, dis-le honnêtement`;
-
-        // Build messages for OpenAI
+        // Build messages for Groq - ULTRA SHORT
         const messages = [
             { role: 'system', content: systemPrompt },
-            ...conversationHistory.slice(-8).map(msg => ({
-                role: msg.role,
-                content: msg.content
-            })),
             { role: 'user', content: message }
         ];
 
-        // Call OpenAI
-        const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
+        // Call Groq API - MAX 40 TOKENS!
+        const completion = await groq.chat.completions.create({
+            model: GROQ_MODEL,
             messages: messages,
-            max_tokens: 600,
-            temperature: mode === 'calm' ? 0.5 : mode === 'motivator' ? 0.9 : 0.7
+            max_tokens: 40,
+            temperature: 0.6,
         });
 
-        const reply = completion.choices[0].message.content;
+        const reply = completion.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer de réponse.';
 
         res.json({
             success: true,
             response: reply,
-            usage: completion.usage
+            usage: { model: GROQ_MODEL }
         });
     } catch (error) {
         console.error('AI Chat Error:', error);
@@ -691,7 +669,7 @@ app.get('/api/health', (req, res) => {
         version: '1.0.0',
         name: 'NEXUS Backend',
         database: 'SQLite (connected)',
-        openai: process.env.OPENAI_API_KEY ? 'configured' : 'not configured',
+        ai: process.env.GROQ_API_KEY ? 'Groq LLaMA 3.3 70B (FREE & Ultra Fast!)' : 'not configured',
         stats: {
             schools: schoolCount.count,
             careers: careerCount.count,
@@ -726,13 +704,13 @@ app.listen(PORT, '0.0.0.0', () => {
   ║                                                               ║
   ║   Server: http://0.0.0.0:${PORT}                                ║
   ║   Database: SQLite (nexus.db)                                 ║
-  ║   OpenAI: ${process.env.OPENAI_API_KEY ? '✅ Configured' : '❌ Not configured'}                                  ║
+  ║   AI: ${process.env.GEMINI_API_KEY ? '✅ Google Gemini (FREE)' : '❌ Not configured'}                      ║
   ║                                                               ║
   ║   Endpoints:                                                  ║
   ║   ├── POST /api/auth/register                                 ║
   ║   ├── POST /api/auth/login                                    ║
   ║   ├── GET  /api/auth/me                                       ║
-  ║   ├── POST /api/sage/chat (GPT-4)                             ║
+  ║   ├── POST /api/sage/chat (Gemini Flash)                      ║
   ║   ├── POST /api/orientation/analyze                           ║
   ║   ├── GET  /api/schools                                       ║
   ║   ├── GET  /api/careers                                       ║

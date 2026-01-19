@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './TimelineSimulator.css'
 
 const translations = {
@@ -13,33 +13,60 @@ const translations = {
                 id: 'engineering',
                 name: 'Ingénieur Informatique',
                 icon: '💻',
+                successRate: 87,
                 timeline: [
-                    { year: 2025, title: 'École d\'ingénieurs', description: 'Début du cycle ingénieur à l\'ENSIAS', income: '0 MAD', satisfaction: 70 },
-                    { year: 2028, title: 'Premier emploi', description: 'Développeur Junior dans une startup', income: '12,000 MAD/mois', satisfaction: 75 },
-                    { year: 2032, title: 'Senior Developer', description: 'Lead technique d\'une équipe de 5 personnes', income: '25,000 MAD/mois', satisfaction: 85 },
-                    { year: 2038, title: 'CTO / Co-fondateur', description: 'Direction technique d\'une scale-up', income: '60,000 MAD/mois', satisfaction: 95 }
+                    { year: 2025, title: 'École d\'ingénieurs', description: 'Début du cycle ingénieur à l\'ENSIAS ou EMI', income: '0 MAD', satisfaction: 70, skills: ['Algorithmes', 'Programmation', 'Mathématiques'], tips: ['Participez aux hackathons', 'Créez des projets personnels'] },
+                    { year: 2028, title: 'Premier emploi', description: 'Développeur Junior dans une startup tech', income: '12,000 MAD/mois', satisfaction: 75, skills: ['React/Node.js', 'SQL', 'Git'], tips: ['Contribuez à l\'open source', 'Obtenez des certifications cloud'] },
+                    { year: 2032, title: 'Senior Developer', description: 'Lead technique d\'une équipe de 5 personnes', income: '25,000 MAD/mois', satisfaction: 85, skills: ['Architecture', 'Leadership', 'DevOps'], tips: ['Mentorez les juniors', 'Développez vos soft skills'] },
+                    { year: 2038, title: 'CTO / Co-fondateur', description: 'Direction technique d\'une scale-up', income: '60,000 MAD/mois', satisfaction: 95, skills: ['Vision stratégique', 'Management', 'Business'], tips: ['Construisez votre réseau', 'Investissez en vous-même'] }
                 ]
             },
             {
                 id: 'medicine',
                 name: 'Médecin Spécialiste',
                 icon: '⚕️',
+                successRate: 78,
                 timeline: [
-                    { year: 2025, title: 'Faculté de Médecine', description: 'Début des études médicales', income: '0 MAD', satisfaction: 60 },
-                    { year: 2032, title: 'Interne en médecine', description: 'Spécialisation en cardiologie', income: '8,000 MAD/mois', satisfaction: 70 },
-                    { year: 2036, title: 'Médecin Spécialiste', description: 'Cardiologue en clinique privée', income: '45,000 MAD/mois', satisfaction: 90 },
-                    { year: 2042, title: 'Chef de Service', description: 'Direction d\'un département cardiologie', income: '80,000 MAD/mois', satisfaction: 95 }
+                    { year: 2025, title: 'Faculté de Médecine', description: 'Début des études médicales à la FMP', income: '0 MAD', satisfaction: 60, skills: ['Anatomie', 'Biologie', 'Chimie'], tips: ['Organisez votre temps', 'Rejoignez des groupes d\'étude'] },
+                    { year: 2032, title: 'Interne en médecine', description: 'Spécialisation en cardiologie', income: '8,000 MAD/mois', satisfaction: 70, skills: ['Diagnostic', 'Procédures', 'Communication patient'], tips: ['Choisissez bien votre spécialité', 'Publiez des articles'] },
+                    { year: 2036, title: 'Médecin Spécialiste', description: 'Cardiologue en clinique privée', income: '45,000 MAD/mois', satisfaction: 90, skills: ['Expertise médicale', 'Gestion cabinet', 'Relation patient'], tips: ['Développez votre réputation', 'Formez-vous continuellement'] },
+                    { year: 2042, title: 'Chef de Service', description: 'Direction d\'un département cardiologie', income: '80,000 MAD/mois', satisfaction: 95, skills: ['Leadership médical', 'Recherche', 'Administration'], tips: ['Enseignez aux futurs médecins', 'Participez aux conférences internationales'] }
                 ]
             },
             {
                 id: 'business',
                 name: 'Entrepreneur',
                 icon: '🚀',
+                successRate: 65,
                 timeline: [
-                    { year: 2025, title: 'École de Commerce', description: 'Formation en management à HEM', income: '0 MAD', satisfaction: 70 },
-                    { year: 2028, title: 'Consultant Junior', description: 'Big 4 consulting experience', income: '15,000 MAD/mois', satisfaction: 65 },
-                    { year: 2031, title: 'Création de startup', description: 'Lancement de votre propre business', income: '20,000 MAD/mois', satisfaction: 80 },
-                    { year: 2038, title: 'Serial Entrepreneur', description: 'Plusieurs entreprises, investisseur', income: '100,000+ MAD/mois', satisfaction: 95 }
+                    { year: 2025, title: 'École de Commerce', description: 'Formation en management (HEM, ENCG, ISCAE)', income: '0 MAD', satisfaction: 70, skills: ['Marketing', 'Finance', 'Communication'], tips: ['Lancez un side project', 'Participez aux compétitions B-School'] },
+                    { year: 2028, title: 'Consultant Junior', description: 'Expérience Big 4 (PwC, Deloitte, EY, KPMG)', income: '15,000 MAD/mois', satisfaction: 65, skills: ['Analyse', 'Présentation', 'Gestion de projet'], tips: ['Développez votre expertise sectorielle', 'Travaillez sur des projets variés'] },
+                    { year: 2031, title: 'Création de startup', description: 'Lancement de votre propre business', income: '20,000 MAD/mois', satisfaction: 80, skills: ['Entrepreneuriat', 'Vente', 'Recrutement'], tips: ['Validez votre idea rapidement', 'Trouvez un bon co-fondateur'] },
+                    { year: 2038, title: 'Serial Entrepreneur', description: 'Plusieurs entreprises, investisseur angel', income: '100,000+ MAD/mois', satisfaction: 95, skills: ['Vision', 'Investissement', 'Mentorat'], tips: ['Diversifiez vos investissements', 'Partagez votre expérience'] }
+                ]
+            },
+            {
+                id: 'architecture',
+                name: 'Architecte',
+                icon: '🏛️',
+                successRate: 82,
+                timeline: [
+                    { year: 2025, title: 'École d\'Architecture', description: 'Début à l\'ENA Rabat ou Casablanca', income: '0 MAD', satisfaction: 75, skills: ['Design', 'AutoCAD', 'Créativité'], tips: ['Construisez votre portfolio', 'Visitez des bâtiments iconiques'] },
+                    { year: 2031, title: 'Architecte Junior', description: 'Premier poste en cabinet', income: '10,000 MAD/mois', satisfaction: 70, skills: ['BIM', 'Gestion chantier', 'Réglementation'], tips: ['Obtenez votre inscription à l\'ordre', 'Spécialisez-vous'] },
+                    { year: 2036, title: 'Architecte Confirmé', description: 'Responsable de projets majeurs', income: '30,000 MAD/mois', satisfaction: 85, skills: ['Management d\'équipe', 'Négociation', 'Urbanisme'], tips: ['Participez à des concours', 'Développez votre signature'] },
+                    { year: 2042, title: 'Directeur d\'Agence', description: 'Fondateur de votre propre cabinet', income: '70,000 MAD/mois', satisfaction: 95, skills: ['Business development', 'Vision artistique', 'Leadership'], tips: ['Créez votre marque', 'Formez la nouvelle génération'] }
+                ]
+            },
+            {
+                id: 'datascience',
+                name: 'Data Scientist',
+                icon: '📊',
+                successRate: 91,
+                timeline: [
+                    { year: 2025, title: 'Formation Data', description: 'Master Data Science (ENSIAS, INSEA, UM6P)', income: '0 MAD', satisfaction: 75, skills: ['Python', 'Statistiques', 'Machine Learning'], tips: ['Faites des projets Kaggle', 'Apprenez les maths avancées'] },
+                    { year: 2027, title: 'Data Analyst', description: 'Premier poste en entreprise', income: '14,000 MAD/mois', satisfaction: 75, skills: ['SQL', 'Visualization', 'Business Intelligence'], tips: ['Maîtrisez Power BI/Tableau', 'Comprenez le métier'] },
+                    { year: 2031, title: 'ML Engineer', description: 'Spécialiste IA dans une scale-up', income: '30,000 MAD/mois', satisfaction: 88, skills: ['Deep Learning', 'MLOps', 'Cloud'], tips: ['Publiez vos recherches', 'Contribuez à la communauté'] },
+                    { year: 2036, title: 'Head of Data/AI', description: 'Direction de l\'équipe Data', income: '55,000 MAD/mois', satisfaction: 95, skills: ['Stratégie Data', 'Management', 'Innovation'], tips: ['Restez à jour sur l\'IA', 'Développez la culture Data'] }
                 ]
             }
         ],
@@ -47,8 +74,10 @@ const translations = {
         satisfaction: 'Satisfaction',
         probability: 'Probabilité de succès',
         insights: 'Insights IA',
+        skills: 'Compétences clés',
+        tips: 'Conseils',
         insightTexts: [
-            '📈 Ce parcours a un taux de réussite de 87% pour des profils similaires au vôtre.',
+            '📈 Ce parcours a un taux de réussite de {successRate}% pour des profils similaires au vôtre.',
             '⏰ Les 3 premières années sont cruciales pour établir les fondations.',
             '💡 Conseil: Développez un réseau professionnel dès maintenant.'
         ]
@@ -231,6 +260,11 @@ const TimelineSimulator = ({ language = 'fr' }) => {
                             <div className="step-header">
                                 <div className="step-year-badge">{selectedPath.timeline[activeStep].year}</div>
                                 <h3 className="step-title">{selectedPath.timeline[activeStep].title}</h3>
+                                {selectedPath.successRate && (
+                                    <div className="success-rate-badge">
+                                        {selectedPath.successRate}% {t.probability || 'success rate'}
+                                    </div>
+                                )}
                             </div>
 
                             <p className="step-description">{selectedPath.timeline[activeStep].description}</p>
@@ -252,13 +286,53 @@ const TimelineSimulator = ({ language = 'fr' }) => {
                                 </div>
                             </div>
 
+                            {/* Skills Section */}
+                            {selectedPath.timeline[activeStep].skills && (
+                                <div className="step-skills">
+                                    <h4 className="skills-title">🎯 {t.skills || 'Compétences clés'}</h4>
+                                    <div className="skills-tags">
+                                        {selectedPath.timeline[activeStep].skills.map((skill, idx) => (
+                                            <span key={idx} className="skill-tag">{skill}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Tips Section */}
+                            {selectedPath.timeline[activeStep].tips && (
+                                <div className="step-tips">
+                                    <h4 className="tips-title">💡 {t.tips || 'Conseils'}</h4>
+                                    <ul className="tips-list">
+                                        {selectedPath.timeline[activeStep].tips.map((tip, idx) => (
+                                            <li key={idx} className="tip-item">{tip}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
                             {/* AI Insights */}
                             <div className="step-insights">
-                                <h4 className="insights-title">{t.insights}</h4>
+                                <h4 className="insights-title">🤖 {t.insights}</h4>
                                 <ul className="insights-list">
-                                    {t.insightTexts.map((insight, index) => (
-                                        <li key={index} className="insight-item">{insight}</li>
-                                    ))}
+                                    <li className="insight-item">
+                                        📈 {language === 'fr'
+                                            ? `Ce parcours a un taux de réussite de ${selectedPath.successRate || 85}% pour des profils similaires au vôtre.`
+                                            : language === 'ar'
+                                                ? `هذا المسار لديه معدل نجاح ${selectedPath.successRate || 85}٪ للملفات المشابهة لملفك.`
+                                                : `This path has a ${selectedPath.successRate || 85}% success rate for profiles similar to yours.`}
+                                    </li>
+                                    <li className="insight-item">
+                                        ⏰ {language === 'fr'
+                                            ? `Vous êtes à l'étape ${activeStep + 1}/${selectedPath.timeline.length} de votre parcours.`
+                                            : language === 'ar'
+                                                ? `أنت في المرحلة ${activeStep + 1}/${selectedPath.timeline.length} من مسارك.`
+                                                : `You are at step ${activeStep + 1}/${selectedPath.timeline.length} of your journey.`}
+                                    </li>
+                                    <li className="insight-item">
+                                        🎯 {activeStep === selectedPath.timeline.length - 1
+                                            ? (language === 'fr' ? 'Félicitations! Vous avez atteint votre objectif final.' : language === 'ar' ? 'تهانينا! لقد وصلت إلى هدفك النهائي.' : 'Congratulations! You\'ve reached your final goal.')
+                                            : (language === 'fr' ? `Prochaine étape: ${selectedPath.timeline[activeStep + 1]?.title}` : language === 'ar' ? `الخطوة التالية: ${selectedPath.timeline[activeStep + 1]?.title}` : `Next milestone: ${selectedPath.timeline[activeStep + 1]?.title}`)}
+                                    </li>
                                 </ul>
                             </div>
                         </div>

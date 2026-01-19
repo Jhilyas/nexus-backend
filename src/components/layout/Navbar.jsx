@@ -80,27 +80,33 @@ const MusicControls = () => {
 const translations = {
     fr: {
         home: 'Accueil',
-        explore: 'Explorer',
+        explore: 'Écoles',
+        timeline: 'Timeline',
         dashboard: 'Tableau de bord',
         pricing: 'Tarifs',
+        voice: 'AI Voice',
         login: 'Connexion',
         logout: 'Déconnexion',
         getStarted: 'Commencer'
     },
     ar: {
         home: 'الرئيسية',
-        explore: 'استكشاف',
+        explore: 'المدارس',
+        timeline: 'الجدول الزمني',
         dashboard: 'لوحة التحكم',
         pricing: 'الأسعار',
+        voice: 'صوت AI',
         login: 'تسجيل الدخول',
         logout: 'تسجيل الخروج',
         getStarted: 'ابدأ الآن'
     },
     en: {
         home: 'Home',
-        explore: 'Explore',
+        explore: 'Schools',
+        timeline: 'Timeline',
         dashboard: 'Dashboard',
         pricing: 'Pricing',
+        voice: 'AI Voice',
         login: 'Login',
         logout: 'Logout',
         getStarted: 'Get Started'
@@ -155,10 +161,23 @@ const Navbar = ({
                         {t.home}
                     </button>
                     <button
-                        className={`nav-link ${currentPage === 'orientation' ? 'active' : ''}`}
-                        onClick={() => { setCurrentPage('orientation'); setMobileMenuOpen(false); }}
+                        className={`nav-link ${currentPage === 'explore' ? 'active' : ''}`}
+                        onClick={() => { setCurrentPage('explore'); setMobileMenuOpen(false); }}
                     >
                         {t.explore}
+                    </button>
+                    <button
+                        className={`nav-link ${currentPage === 'timeline' ? 'active' : ''}`}
+                        onClick={() => { setCurrentPage('timeline'); setMobileMenuOpen(false); }}
+                    >
+                        ⏱️ {t.timeline}
+                    </button>
+                    {/* AI Voice - Accessible to EVERYONE! */}
+                    <button
+                        className={`nav-link voice-nav-link ${currentPage === 'voice' ? 'active' : ''}`}
+                        onClick={() => { setCurrentPage('voice'); setMobileMenuOpen(false); }}
+                    >
+                        🎤 {t.voice}
                     </button>
                     {isLoggedIn && (
                         <button

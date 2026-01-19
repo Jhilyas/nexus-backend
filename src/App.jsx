@@ -5,6 +5,7 @@ import FeaturesSection from './components/features/FeaturesSection'
 import OrientationEngine from './components/ai/OrientationEngine'
 import TimelineSimulator from './components/dashboard/TimelineSimulator'
 import AIMentor from './components/ai/AIMentor'
+import RealtimeVoice from './components/ai/RealtimeVoice'
 import PricingSection from './components/pricing/PricingSection'
 import Dashboard from './components/dashboard/Dashboard'
 import SchoolsExplorer from './components/explore/SchoolsExplorer'
@@ -18,6 +19,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState(null)
   const [showMentor, setShowMentor] = useState(false)
+  const [showVoiceMentor, setShowVoiceMentor] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [language, setLanguage] = useState('fr')
   const [showSplash, setShowSplash] = useState(true)
@@ -42,6 +44,12 @@ function App() {
       setUser(JSON.parse(savedUser))
       setIsLoggedIn(true)
     }
+
+    // Listen for voice mentor trigger from AIMentor
+    const handleOpenVoiceMentor = () => {
+      setShowVoiceMentor(true)
+    }
+    window.addEventListener('openVoiceMentor', handleOpenVoiceMentor)
 
     // Exposer les contrôles audio globalement
     window.nexusMusicControls = {
@@ -118,6 +126,7 @@ function App() {
             onToggleMentor={() => setShowMentor(!showMentor)}
             user={user}
             language={language}
+            setCurrentPage={setCurrentPage}
           />
         )
       case 'orientation':
@@ -126,6 +135,14 @@ function App() {
         return <TimelineSimulator language={language} />
       case 'explore':
         return <SchoolsExplorer language={language} />
+      case 'voice':
+        return (
+          <RealtimeVoice
+            language={language}
+            onBack={() => setCurrentPage('home')}
+            isPage={true}
+          />
+        )
       default:
         return (
           <>
@@ -183,6 +200,15 @@ function App() {
             language={language}
           />
 
+          {/* Voice Mentor - OpenAI Realtime API */}
+          {showVoiceMentor && (
+            <RealtimeVoice
+              language={language}
+              onBack={() => setShowVoiceMentor(false)}
+              isPage={false}
+            />
+          )}
+
           {/* Auth Modal */}
           <AuthModal
             isOpen={showAuthModal}
@@ -193,15 +219,28 @@ function App() {
 
           <Footer language={language} />
 
-          {/* Floating Mentor Button - Show on home when logged in */}
-          {isLoggedIn && currentPage === 'home' && (
-            <button
-              className="floating-mentor-btn"
-              onClick={() => setShowMentor(true)}
-            >
-              <span>🧠</span>
-              <div className="floating-pulse"></div>
-            </button>
+          {/* Floating Buttons - Show on home for EVERYONE (no login required!) */}
+          {currentPage === 'home' && (
+            <>
+              {/* Voice Mentor Button - Accessible to ALL! */}
+              <button
+                className="floating-voice-btn"
+                onClick={() => setShowVoiceMentor(true)}
+                title="Conversation vocale avec NEXUS AI"
+              >
+                <span>🎤</span>
+                <div className="voice-btn-pulse"></div>
+              </button>
+
+              {/* Text Mentor Button */}
+              <button
+                className="floating-mentor-btn"
+                onClick={() => setShowMentor(true)}
+              >
+                <span>🧠</span>
+                <div className="floating-pulse"></div>
+              </button>
+            </>
           )}
         </div>
       )}
