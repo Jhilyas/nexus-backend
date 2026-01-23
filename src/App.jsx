@@ -51,8 +51,14 @@ function App() {
     // Check for saved user session
     const savedUser = localStorage.getItem('nexus_user')
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
-      setIsLoggedIn(true)
+      try {
+        const parsedUser = JSON.parse(savedUser)
+        setUser(parsedUser)
+        setIsLoggedIn(true)
+      } catch (error) {
+        console.error('Failed to parse user session:', error)
+        localStorage.removeItem('nexus_user')
+      }
     }
 
     // Listen for voice mentor trigger from AIMentor
@@ -60,6 +66,11 @@ function App() {
       setShowVoiceMentor(true)
     }
     window.addEventListener('openVoiceMentor', handleOpenVoiceMentor)
+
+    // Cleanup function
+    return () => {
+      window.removeEventListener('openVoiceMentor', handleOpenVoiceMentor)
+    }
 
     // Exposer les contrôles audio globalement
     window.nexusMusicControls = {
