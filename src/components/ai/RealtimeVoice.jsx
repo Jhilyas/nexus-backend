@@ -59,6 +59,9 @@ const translations = {
     }
 };
 
+
+import UpgradePrompt, { UsageBadge } from '../common/UpgradePrompt';
+
 const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
     const [status, setStatus] = useState('idle');
     const [transcript, setTranscript] = useState('');
@@ -66,6 +69,9 @@ const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
     const [conversationHistory, setConversationHistory] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [detectedLanguage, setDetectedLanguage] = useState(null);
+    const [showUpgrade, setShowUpgrade] = useState(false);
+    const [promptType, setPromptType] = useState('upgrade'); // 'upgrade' | 'follow'
+    const [remainingUses, setRemainingUses] = useState(usageLimitService.getRemaining('aiVoice'));
 
     const isProcessingRef = useRef(false);
 
@@ -216,8 +222,22 @@ const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
     }, []);
 
     const handleOrbClick = useCallback(() => {
-        if (status === 'idle' || status === 'error') startListening();
-        else stopAll();
+        if (status === 'idle' || status === 'error') {
+            // Check usage limit FIRST
+            const usage = usageLimitService.canUse('aiVoice');
+            if (!usage.allowed) {
+                if (usage.reason === 'bonus_needed') {
+                    setPromptType('follow');
+                } else {
+                    setPromptType('upgrade');
+                }
+                setShowUpgrade(true);
+                return;
+            }
+            startListening();
+        } else {
+            stopAll();
+        }
     }, [status, startListening, stopAll]);
 
     const handleClearHistory = useCallback(() => {
@@ -352,6 +372,19 @@ const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
                     </svg>
                 </button>
                 {content}
+                {showUpgrade && (
+                    <UpgradePrompt
+                        feature="aiVoice"
+                        type={promptType}
+                        usedCount={promptType === 'follow' ? 10 : 15}
+                        onFollow={() => {
+                            usageLimitService.claimBonus();
+                            setShowUpgrade(false);
+                            setRemainingUses(usageLimitService.getRemaining('aiVoice'));
+                        }}
+                        onClose={() => setShowUpgrade(false)}
+                    />
+                )}
             </div>
         </div>
     );

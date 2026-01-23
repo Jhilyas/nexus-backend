@@ -15,6 +15,7 @@ const HandController = () => {
     const [gesture, setGesture] = useState('none')
     const [fps, setFps] = useState(0)
     const [showUpgrade, setShowUpgrade] = useState(false)
+    const [promptType, setPromptType] = useState('upgrade') // 'upgrade' | 'follow'
     const [remainingUses, setRemainingUses] = useState(usageLimitService.getRemaining('handTracking'))
 
     const videoRef = useRef(null)
@@ -252,6 +253,11 @@ const HandController = () => {
             // Check usage limit
             const usage = usageLimitService.canUse('handTracking')
             if (!usage.allowed) {
+                if (usage.reason === 'bonus_needed') {
+                    setPromptType('follow')
+                } else {
+                    setPromptType('upgrade')
+                }
                 setShowUpgrade(true)
                 return
             }
@@ -322,7 +328,13 @@ const HandController = () => {
             {showUpgrade && (
                 <UpgradePrompt
                     feature="handTracking"
-                    usedCount={10}
+                    usedCount={promptType === 'follow' ? 10 : 15}
+                    type={promptType}
+                    onFollow={() => {
+                        usageLimitService.claimBonus()
+                        setShowUpgrade(false)
+                        setRemainingUses(usageLimitService.getRemaining('handTracking'))
+                    }}
                     onClose={() => setShowUpgrade(false)}
                 />
             )}
