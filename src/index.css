@@ -896,61 +896,290 @@ h6 {
 
 
 /* ═══════════════════════════════════════════════════════════════
-   FLOATING MENTOR BUTTON
+   APPLE VISION PRO - FLOATING ACTION BAR
+   Premium glassmorphism with ambient lighting
    ═══════════════════════════════════════════════════════════════ */
 
-.floating-mentor-btn {
+.vision-pro-action-bar {
   position: fixed;
-  bottom: var(--space-xl);
-  right: var(--space-xl);
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.vision-pro-bar-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 10px;
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    0 1px 4px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: vision-pro-entrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes vision-pro-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.vision-pro-divider {
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      transparent 100%);
+  margin: 2px 0;
+}
+
+.vision-pro-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: rgba(255, 255, 255, 0.85);
+  min-width: 58px;
+}
+
+.vision-pro-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.vision-pro-btn:active {
+  transform: scale(0.96);
+}
+
+.vision-pro-btn .btn-emoji {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.vision-pro-btn:hover .btn-emoji {
+  transform: scale(1.12);
+}
+
+.vision-pro-btn .btn-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+
+.vision-pro-btn:hover .btn-label {
+  opacity: 1;
+}
+
+.vision-pro-btn .btn-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.vision-pro-btn.voice .btn-glow {
+  background: radial-gradient(circle at center, rgba(138, 43, 226, 0.4) 0%, transparent 70%);
+}
+
+.vision-pro-btn.hand .btn-glow {
+  background: radial-gradient(circle at center, rgba(16, 185, 129, 0.4) 0%, transparent 70%);
+}
+
+.vision-pro-btn.chat .btn-glow {
+  background: radial-gradient(circle at center, rgba(102, 126, 234, 0.4) 0%, transparent 70%);
+}
+
+.vision-pro-btn:hover .btn-glow {
+  opacity: 1;
+}
+
+.vision-pro-btn .btn-icon {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: var(--nexus-shadow-lg), 0 0 30px rgba(102, 126, 234, 0.4);
-  z-index: 100;
-  cursor: pointer;
-  border: none;
-  background: linear-gradient(135deg, var(--nexus-aurora-1), var(--nexus-aurora-2));
-  transition: all var(--transition-base);
+  transition: transform 0.3s ease;
 }
 
-.floating-mentor-btn:hover {
-  transform: scale(1.1);
-  box-shadow: var(--nexus-shadow-lg), 0 0 50px rgba(102, 126, 234, 0.6);
+.vision-pro-btn:hover .btn-icon {
+  transform: scale(1.15);
 }
 
-.floating-pulse {
+.vision-pro-btn .btn-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: all 0.3s ease;
+}
+
+.vision-pro-btn.voice .btn-icon svg {
+  stroke: #c084fc;
+}
+
+.vision-pro-btn.hand .btn-icon svg {
+  stroke: #34d399;
+}
+
+.vision-pro-btn.chat .btn-icon svg {
+  stroke: #818cf8;
+}
+
+.vision-pro-btn:hover.voice .btn-icon svg {
+  stroke: #e879f9;
+  filter: drop-shadow(0 0 8px rgba(232, 121, 249, 0.6));
+}
+
+.vision-pro-btn:hover.hand .btn-icon svg {
+  stroke: #6ee7b7;
+  filter: drop-shadow(0 0 8px rgba(110, 231, 183, 0.6));
+}
+
+.vision-pro-btn:hover.chat .btn-icon svg {
+  stroke: #a5b4fc;
+  filter: drop-shadow(0 0 8px rgba(165, 180, 252, 0.6));
+}
+
+.vision-pro-btn .btn-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.vision-pro-btn:hover .btn-label {
+  opacity: 1;
+}
+
+/* Ambient glow underneath */
+.vision-pro-ambient {
   position: absolute;
-  inset: -5px;
-  border: 2px solid var(--nexus-aurora-1);
-  border-radius: 50%;
-  animation: floating-pulse 2s ease-in-out infinite;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 60px;
+  background: radial-gradient(ellipse at center,
+      rgba(102, 126, 234, 0.3) 0%,
+      rgba(138, 43, 226, 0.2) 30%,
+      transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+  animation: ambient-breathe 4s ease-in-out infinite;
 }
 
-@keyframes floating-pulse {
+@keyframes ambient-breathe {
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+/* Usage badge positioning */
+.vision-pro-btn .usage-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.9);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
 
   0%,
   100% {
     transform: scale(1);
-    opacity: 0.5;
   }
 
   50% {
-    transform: scale(1.15);
-    opacity: 0;
+    transform: scale(1.05);
   }
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
+/* Mobile responsiveness */
+@media (max-width: 480px) {
+  .vision-pro-action-bar {
+    right: 12px;
   }
 
-  to {
-    transform: rotate(360deg);
+  .vision-pro-bar-inner {
+    padding: 12px 8px;
+    gap: 4px;
+    border-radius: 20px;
+  }
+
+  .vision-pro-btn {
+    padding: 8px 12px;
+    min-width: 50px;
+  }
+
+  .vision-pro-btn .btn-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .vision-pro-btn .btn-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .vision-pro-btn .btn-label {
+    font-size: 9px;
+  }
+
+  .vision-pro-divider {
+    width: 30px;
   }
 }

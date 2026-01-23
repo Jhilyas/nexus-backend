@@ -190,7 +190,7 @@ const Navbar = ({
                     <button
                         className="nav-link"
                         onClick={() => {
-                            document.querySelector('.pricing-section')?.scrollIntoView({ behavior: 'smooth' })
+                            document.getElementById('tarifs')?.scrollIntoView({ behavior: 'smooth' })
                             setMobileMenuOpen(false)
                         }}
                     >

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import Groq from 'groq-sdk';
+// import Groq from 'groq-sdk'; // Removed Groq
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db, { dbHelpers } from './database.js';
@@ -12,14 +12,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Initialize Groq (Ultra Fast & FREE!)
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
-
 // Middleware
 const allowedOrigins = [
     'http://localhost:5173',
     'https://nexus-morocco-platform.netlify.app',
+    'https://nexus-morocco.com',
+    'https://www.nexus-morocco.com',
     process.env.FRONTEND_URL
 ].filter(Boolean);
 
@@ -175,6 +173,20 @@ app.get('/api/auth/me', authenticateToken, (req, res) => {
 // AI MENTOR (SAGE) ROUTES
 // ═══════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════
+// AI MENTOR (SAGE) ROUTES - MISTRAL POWERED
+// ═══════════════════════════════════════════════════════════════
+
+// import { GoogleGenerativeAI } from '@google/generative-ai'; // Removed Gemini
+
+// ═══════════════════════════════════════════════════════════════
+// AI MENTOR (SAGE) ROUTES - MISTRAL POWERED
+// ═══════════════════════════════════════════════════════════════
+
+// Initialize Mistral
+const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY;
+const MISTRAL_MODEL = 'mistral-small-latest';
+
 const SAGE_SYSTEM_PROMPT = `Tu es SAGE, l'ami conseiller de NEXUS pour les étudiants marocains.
 
 ⚡ RÈGLE ABSOLUE: RÉPONSES ULTRA-COURTES!
@@ -195,27 +207,35 @@ app.post('/api/sage/chat', optionalAuth, async (req, res) => {
     try {
         const { message, conversationHistory = [], mode = 'mentor', language = 'fr' } = req.body;
 
-        // Build messages for Groq
-        const systemContext = SAGE_SYSTEM_PROMPT + `\nCurrent mode: ${mode}. Primary language: ${language}`;
+        if (!MISTRAL_API_KEY) {
+            throw new Error('MISTRAL_API_KEY not configured');
+        }
 
         const messages = [
-            { role: 'system', content: systemContext },
+            { role: 'system', content: SAGE_SYSTEM_PROMPT + `\nMode: ${mode}.` },
             ...conversationHistory.slice(-8).map(msg => ({
-                role: msg.role === 'user' ? 'user' : 'assistant',
+                role: msg.role === 'assistant' ? 'assistant' : 'user',
                 content: msg.content
             })),
             { role: 'user', content: message }
         ];
 
-        // Call Groq API (Ultra Fast!)
-        const completion = await groq.chat.completions.create({
-            model: GROQ_MODEL,
-            messages: messages,
-            max_tokens: 150,
-            temperature: 0.7,
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${MISTRAL_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: MISTRAL_MODEL,
+                messages: messages,
+                max_tokens: 150,
+                temperature: 0.7
+            })
         });
 
-        const reply = completion.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer de réponse.';
+        const data = await response.json();
+        const reply = data.choices[0]?.message?.content || 'Désolé, problème technique.';
 
         // Save conversation if user is logged in
         if (req.user) {
@@ -241,14 +261,13 @@ app.post('/api/sage/chat', optionalAuth, async (req, res) => {
 
         res.json({
             reply,
-            usage: { model: GROQ_MODEL }
+            usage: { model: MISTRAL_MODEL }
         });
     } catch (error) {
         console.error('SAGE Error:', error);
 
-        // Fallback response if API fails
         const fallbackResponses = {
-            fr: "Je suis désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler votre question ?",
+            fr: "Je suis désolé, je rencontre des difficultés techniques. Mistral API error.",
             ar: "أعتذر، أواجه صعوبات تقنية. هل يمكنك إعادة صياغة سؤالك؟",
             en: "I'm sorry, I'm experiencing technical difficulties. Could you rephrase your question?"
         };
@@ -265,40 +284,42 @@ app.post('/api/ai/chat', optionalAuth, async (req, res) => {
     try {
         const { message, conversationHistory = [], mode = 'mentor', personality = '', language = 'fr' } = req.body;
 
-        const systemPrompt = `STOP! MAX 2 PHRASES COURTES!
+        if (!MISTRAL_API_KEY) {
+            throw new Error('MISTRAL_API_KEY not configured');
+        }
 
-Réponds comme un pote en 2 phrases max. Exemple:
-"Ça va super! Et toi, ça roule?"
-"L'ENSIAS c'est top! Tu veux savoir quoi?"
-
-JAMAIS de listes. JAMAIS plus de 2 phrases. Sois cool et expressif!`;
-
-        // Build messages for Groq - ULTRA SHORT
         const messages = [
-            { role: 'system', content: systemPrompt },
+            { role: 'system', content: `STOP! MAX 2 PHRASES COURTES!\nRéponds comme un pote. JAMAIS de listes. Sois cool!` },
             { role: 'user', content: message }
         ];
 
-        // Call Groq API - MAX 40 TOKENS!
-        const completion = await groq.chat.completions.create({
-            model: GROQ_MODEL,
-            messages: messages,
-            max_tokens: 40,
-            temperature: 0.6,
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${MISTRAL_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: MISTRAL_MODEL,
+                messages: messages,
+                max_tokens: 150,
+                temperature: 0.7
+            })
         });
 
-        const reply = completion.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer de réponse.';
+        const data = await response.json();
+        const reply = data.choices[0]?.message?.content || 'Désolé, problème technique.';
 
         res.json({
             success: true,
             response: reply,
-            usage: { model: GROQ_MODEL }
+            usage: { model: MISTRAL_MODEL }
         });
     } catch (error) {
         console.error('AI Chat Error:', error);
 
         const fallbackResponses = {
-            fr: "Je suis désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler votre question ?",
+            fr: "Je suis désolé, je rencontre des difficultés techniques (Mistral fallback).",
             ar: "أعتذر، أواجه صعوبات تقنية. هل يمكنك إعادة صياغة سؤالك؟",
             en: "I'm sorry, I'm experiencing technical difficulties. Could you rephrase your question?"
         };
@@ -652,6 +673,396 @@ app.get('/api/user/orientation-history', authenticateToken, (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// SUBSCRIPTION & PLANS ROUTES
+// ═══════════════════════════════════════════════════════════════
+
+// Plan definitions with features and limits - NEXUS AI
+const PLANS = {
+    free: {
+        id: 'free',
+        name: 'Découverte',
+        price: 0,
+        yearlyPrice: 0,
+        features: {
+            nexusAIChat: 10,          // 10 conversations NEXUS AI Chat
+            nexusAIVoice: 10,         // 10 sessions NEXUS AI Voice
+            timelineSimulations: 1,
+            orientationTests: 1,
+            schoolExploration: true,
+            newsArticles: true,
+            examPrep: false,
+            prioritySupport: false,
+            humanMentor: false,
+            vipEvents: false,
+            aiInterview: false
+        }
+    },
+    pro: {
+        id: 'pro',
+        name: 'Pro',
+        price: 79,
+        yearlyPrice: 758,
+        features: {
+            nexusAIChat: -1,          // Unlimited
+            nexusAIVoice: -1,         // Unlimited
+            timelineSimulations: -1,
+            orientationTests: -1,
+            schoolExploration: true,
+            newsArticles: true,
+            examPrep: true,
+            prioritySupport: true,
+            deadlineAlerts: true,
+            humanMentor: false,
+            vipEvents: false,
+            aiInterview: false
+        }
+    },
+    elite: {
+        id: 'elite',
+        name: 'Elite',
+        price: 199,
+        yearlyPrice: 1908,
+        features: {
+            nexusAIChat: -1,
+            nexusAIVoice: -1,
+            timelineSimulations: -1,
+            orientationTests: -1,
+            schoolExploration: true,
+            newsArticles: true,
+            examPrep: true,
+            prioritySupport: true,
+            deadlineAlerts: true,
+            humanMentor: true,         // 2h/month
+            vipEvents: true,
+            aiInterview: true,
+            certificate: true
+        }
+    },
+    godmode: {
+        id: 'godmode',
+        name: 'Lifetime',
+        price: 499,
+        yearlyPrice: 499,            // One-time payment
+        features: {
+            nexusAIChat: -1,
+            nexusAIVoice: -1,
+            timelineSimulations: -1,
+            orientationTests: -1,
+            schoolExploration: true,
+            newsArticles: true,
+            examPrep: true,
+            prioritySupport: true,
+            deadlineAlerts: true,
+            humanMentor: true,
+            vipEvents: true,
+            aiInterview: true,
+            certificate: true,
+            lifetimeAccess: true,
+            familyAccounts: 5,
+            earlyAccess: true,
+            masterclasses: true,
+            founderBadge: true
+        }
+    }
+};
+
+
+// Get all plans
+app.get('/api/plans', (req, res) => {
+    res.json(PLANS);
+});
+
+// Get current user subscription
+app.get('/api/user/subscription', authenticateToken, (req, res) => {
+    try {
+        const user = dbHelpers.getUserById.get(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const currentPlan = PLANS[user.subscription] || PLANS.free;
+
+        res.json({
+            currentPlan: user.subscription || 'free',
+            planDetails: currentPlan,
+            subscribedAt: user.created_at,
+            features: currentPlan.features
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Subscribe/upgrade to a plan (Demo mode - no real payment)
+app.post('/api/user/subscription', authenticateToken, (req, res) => {
+    try {
+        const { planId, billingCycle = 'monthly' } = req.body;
+
+        // Validate plan
+        if (!PLANS[planId]) {
+            return res.status(400).json({ error: 'Invalid plan ID' });
+        }
+
+        // Update user subscription
+        dbHelpers.updateUserSubscription.run(planId, req.user.id);
+
+        // Get updated user
+        const user = dbHelpers.getUserById.get(req.user.id);
+        const plan = PLANS[planId];
+
+        res.json({
+            success: true,
+            message: `🎉 Félicitations! Vous êtes maintenant ${plan.name}!`,
+            subscription: {
+                plan: planId,
+                planDetails: plan,
+                billingCycle,
+                activatedAt: new Date().toISOString()
+            },
+            user: { ...user, password: undefined }
+        });
+    } catch (error) {
+        console.error('Subscription error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Check if user has access to a feature
+app.get('/api/user/feature-access/:feature', authenticateToken, (req, res) => {
+    try {
+        const { feature } = req.params;
+        const user = dbHelpers.getUserById.get(req.user.id);
+        const plan = PLANS[user.subscription] || PLANS.free;
+
+        const hasAccess = plan.features[feature] === true ||
+            (typeof plan.features[feature] === 'number' && plan.features[feature] !== 0);
+
+        res.json({
+            feature,
+            hasAccess,
+            currentPlan: user.subscription,
+            limit: plan.features[feature],
+            upgradeRequired: !hasAccess
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// AI USAGE TRACKING
+// ═══════════════════════════════════════════════════════════════
+
+// Get AI usage stats for user
+app.get('/api/user/ai-usage', authenticateToken, (req, res) => {
+    try {
+        const user = dbHelpers.getUserById.get(req.user.id);
+        const plan = PLANS[user.subscription] || PLANS.free;
+        const progress = dbHelpers.getUserProgress.get(req.user.id);
+
+        // Count conversations today
+        const today = new Date().toISOString().split('T')[0];
+        const chatCount = db.prepare(`
+            SELECT COUNT(*) as count FROM conversations 
+            WHERE user_id = ? AND DATE(created_at) = DATE(?)
+        `).get(req.user.id, today);
+
+        const chatUsed = chatCount?.count || 0;
+        const voiceUsed = progress?.mentor_sessions || 0;
+
+        const chatLimit = plan.features.nexusAIChat;
+        const voiceLimit = plan.features.nexusAIVoice;
+
+        res.json({
+            chat: {
+                used: chatUsed,
+                limit: chatLimit,
+                unlimited: chatLimit === -1,
+                remaining: chatLimit === -1 ? 'unlimited' : Math.max(0, chatLimit - chatUsed)
+            },
+            voice: {
+                used: voiceUsed,
+                limit: voiceLimit,
+                unlimited: voiceLimit === -1,
+                remaining: voiceLimit === -1 ? 'unlimited' : Math.max(0, voiceLimit - voiceUsed)
+            },
+            plan: user.subscription || 'free',
+            planName: plan.name
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Check if user can use AI Chat
+app.get('/api/user/can-use-chat', authenticateToken, (req, res) => {
+    try {
+        const user = dbHelpers.getUserById.get(req.user.id);
+        const plan = PLANS[user.subscription] || PLANS.free;
+
+        // Unlimited
+        if (plan.features.nexusAIChat === -1) {
+            return res.json({ canUse: true, unlimited: true });
+        }
+
+        // Count today's conversations
+        const today = new Date().toISOString().split('T')[0];
+        const chatCount = db.prepare(`
+            SELECT COUNT(*) as count FROM conversations 
+            WHERE user_id = ? AND DATE(created_at) = DATE(?)
+        `).get(req.user.id, today);
+
+        const used = chatCount?.count || 0;
+        const limit = plan.features.nexusAIChat;
+        const canUse = used < limit;
+
+        res.json({
+            canUse,
+            used,
+            limit,
+            remaining: limit - used,
+            upgradeMessage: canUse ? null : 'Vous avez atteint votre limite quotidienne. Passez à Pro pour un accès illimité!'
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Check if user can use AI Voice
+app.get('/api/user/can-use-voice', authenticateToken, (req, res) => {
+    try {
+        const user = dbHelpers.getUserById.get(req.user.id);
+        const plan = PLANS[user.subscription] || PLANS.free;
+
+        // Unlimited
+        if (plan.features.nexusAIVoice === -1) {
+            return res.json({ canUse: true, unlimited: true });
+        }
+
+        const progress = dbHelpers.getUserProgress.get(req.user.id);
+        const used = progress?.mentor_sessions || 0;
+        const limit = plan.features.nexusAIVoice;
+        const canUse = used < limit;
+
+        res.json({
+            canUse,
+            used,
+            limit,
+            remaining: limit - used,
+            upgradeMessage: canUse ? null : 'Vous avez atteint votre limite de sessions vocales. Passez à Pro pour un accès illimité!'
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// POINT-&-EXPLAIN - Vision AI Analysis
+// ═══════════════════════════════════════════════════════════════
+
+const POINT_EXPLAIN_PROMPT = `Tu es un assistant visuel NEXUS. Tu reçois la description d'une zone d'image pointée par un utilisateur.
+
+🎯 TON RÔLE:
+- Explique clairement ce que l'élément pointé représente
+- Si c'est du texte/équation: explique le concept
+- Si c'est un composant/schéma: décris son rôle
+- Si c'est une erreur: propose une correction
+
+⚡ FORMAT: 2-3 phrases courtes, directes et utiles!
+🌍 Langue: Réponds dans la même langue que l'utilisateur.
+
+Exemples:
+- "C'est une intégrale définie. Elle calcule l'aire sous la courbe entre a et b."
+- "Ce composant est une résistance de 10kΩ. Elle limite le courant dans ton circuit."
+- "Cette étape est fausse: tu as oublié de factoriser par x²."`;
+
+app.post('/api/ai/point-explain', optionalAuth, async (req, res) => {
+    try {
+        const { imageBase64, context = 'general', language = 'fr', description = '' } = req.body;
+
+        // For interface elements, use description directly
+        let contentToAnalyze = description;
+
+        // Build the prompt based on context
+        const contextPrompts = {
+            interface: `Tu es un assistant qui explique les éléments d'interface.
+L'utilisateur pointe un élément de l'application NEXUS.
+
+RÈGLES:
+- Explique en 1-2 phrases ce que fait cet élément
+- Sois utile et concis
+- Donne un conseil si pertinent`,
+            education: `Tu es un tuteur expert.
+L'utilisateur pointe un élément éducatif (formule, exercice, concept).
+
+RÈGLES:
+- Explique clairement en 2-3 phrases
+- Donne un exemple si utile`,
+            general: `Tu es un assistant utile.
+L'utilisateur pointe quelque chose et veut une explication.
+
+RÈGLES:
+- Explique en 1-2 phrases claires
+- Sois direct et utile`
+        };
+
+        const systemPrompt = contextPrompts[context] || contextPrompts.general;
+
+        // Create user message
+        const userMessage = contentToAnalyze
+            ? `Explique cet élément: ${contentToAnalyze}`
+            : "L'utilisateur a pointé un élément mais je n'ai pas plus de détails. Dis-lui de pointer plus précisément.";
+
+        // Call Groq for intelligent explanation
+        const completion = await groq.chat.completions.create({
+            model: GROQ_MODEL,
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userMessage }
+            ],
+            max_tokens: 150,
+            temperature: 0.6,
+        });
+
+        const explanation = completion.choices[0]?.message?.content ||
+            "Je n'ai pas pu analyser cet élément. Essayez de pointer un autre élément.";
+
+        res.json({
+            success: true,
+            explanation,
+            context,
+            language
+        });
+
+    } catch (error) {
+        console.error('Point-Explain Error:', error);
+
+        // Fallback response
+        const fallbacks = {
+            fr: "Cet élément fait partie de l'interface NEXUS. Pointez-le plus longtemps pour plus de détails.",
+            en: "This element is part of the NEXUS interface. Point at it longer for more details.",
+            ar: "هذا العنصر جزء من واجهة NEXUS."
+        };
+
+        res.json({
+            success: true,
+            explanation: fallbacks[req.body.language] || fallbacks.fr,
+            context: req.body.context,
+            language: req.body.language
+        });
+    }
+});
+
+// Simplified endpoint for testing
+app.post('/api/ai/point-explain/test', async (req, res) => {
+    res.json({
+        success: true,
+        explanation: "Test réussi! L'endpoint Point-&-Explain fonctionne correctement. 🎯",
+        message: "Envoyez une image base64 pour obtenir une vraie analyse."
+    });
 });
 
 // ═══════════════════════════════════════════════════════════════

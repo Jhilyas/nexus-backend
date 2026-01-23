@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import usageLimitService from '../../services/usageLimits'
 import './Dashboard.css'
 
 const translations = {
@@ -54,6 +55,7 @@ const translations = {
 
 const Dashboard = ({ onToggleMentor, language = 'fr', setCurrentPage }) => {
     const [progress, setProgress] = useState(0)
+    const [planDetails, setPlanDetails] = useState(usageLimitService.getPlanDetails())
     const t = translations[language]
     const isRTL = language === 'ar'
 
@@ -98,7 +100,18 @@ const Dashboard = ({ onToggleMentor, language = 'fr', setCurrentPage }) => {
         { label: t.mentor, icon: '🧠', action: onToggleMentor },
         { label: t.simulate, icon: '⏱️', action: () => setCurrentPage && setCurrentPage('timeline') },
         { label: t.explore, icon: '🔮', action: () => setCurrentPage && setCurrentPage('explore') },
-        { label: t.settings, icon: '⚙️', action: () => { } }
+        {
+            label: 'Human Mentor',
+            icon: usageLimitService.hasFeature('humanMentor') ? '👨‍🏫' : '🔒',
+            action: () => {
+                if (usageLimitService.hasFeature('humanMentor')) {
+                    alert('Human Mentor session requested! (Demo)');
+                } else {
+                    alert('Upgrade to Elite to access Human Mentor!');
+                }
+            },
+            locked: !usageLimitService.hasFeature('humanMentor')
+        }
     ]
 
     return (
@@ -107,7 +120,10 @@ const Dashboard = ({ onToggleMentor, language = 'fr', setCurrentPage }) => {
             <div className="dashboard-header">
                 <div className="dashboard-greeting">
                     <h1 className="greeting-text">
-                        {t.welcome} <span className="user-name">Ilyas</span> 👋
+                        {t.welcome} <span className="user-name">Ilyas</span>
+                        <span className={`plan-badge ${planDetails.color}`} title={planDetails.label}>
+                            {planDetails.badge} <span className="plan-label">{planDetails.label}</span>
+                        </span>
                     </h1>
                     <p className="greeting-subtitle">{t.subtitle}</p>
                 </div>
@@ -229,7 +245,7 @@ const Dashboard = ({ onToggleMentor, language = 'fr', setCurrentPage }) => {
                         {quickActions.map((action, index) => (
                             <button
                                 key={index}
-                                className="quick-action glass"
+                                className={`quick-action glass ${action.locked ? 'opacity-75 grayscale' : ''}`}
                                 onClick={action.action}
                             >
                                 <span className="action-icon">{action.icon}</span>

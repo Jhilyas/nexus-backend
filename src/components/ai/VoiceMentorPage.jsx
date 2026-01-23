@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { voiceAI, FRENCH_VOICES } from '../../services/voiceAI';
+import usageLimitService from '../../services/usageLimits';
+import UpgradePrompt from '../common/UpgradePrompt';
 import './VoiceMentor.css';
 import './VoiceMentorPage.css';
 
@@ -64,11 +66,23 @@ const VoiceMentorPage = ({ language = 'fr', onBack }) => {
     const [error, setError] = useState(null);
     const [selectedVoice, setSelectedVoice] = useState('bella');
     const [detectedLanguage, setDetectedLanguage] = useState(null);
+    const [showUpgrade, setShowUpgrade] = useState(false);
+    const [promptType, setPromptType] = useState('upgrade');
+    const [remainingUses, setRemainingUses] = useState(usageLimitService.getRemaining('aiVoice'));
 
     const isProcessingRef = useRef(false);
     const t = translations.fr;
 
     useEffect(() => {
+        // Initial greeting
+        const sayHello = async () => {
+            // Short delay to ensure voices are loaded
+            setTimeout(async () => {
+                await voiceAI.speak("Bonjour, comment puis-je vous aider aujourd'hui ?", { voice: selectedVoice });
+            }, 500);
+        };
+        sayHello();
+
         return () => {
             voiceAI.stopAll();
         };
@@ -128,6 +142,22 @@ const VoiceMentorPage = ({ language = 'fr', onBack }) => {
 
     // Start listening - Whisper auto-detects language
     const startListening = useCallback(async () => {
+        // Check usage limit
+        const usage = usageLimitService.canUse('aiVoice');
+        if (!usage.allowed) {
+            if (usage.reason === 'bonus_needed') {
+                setPromptType('follow');
+            } else {
+                setPromptType('upgrade');
+            }
+            setShowUpgrade(true);
+            return;
+        }
+
+        // Record usage
+        usageLimitService.recordUse('aiVoice');
+        setRemainingUses(usageLimitService.getRemaining('aiVoice'));
+
         setTranscript('');
         setResponse('');
         setError(null);
@@ -323,6 +353,20 @@ const VoiceMentorPage = ({ language = 'fr', onBack }) => {
                     </div>
                 )}
             </div>
+
+            {showUpgrade && (
+                <UpgradePrompt
+                    feature="aiVoice"
+                    type={promptType}
+                    usedCount={promptType === 'follow' ? 10 : 15}
+                    onFollow={() => {
+                        usageLimitService.claimBonus();
+                        setRemainingUses(usageLimitService.getRemaining('aiVoice'));
+                        setShowUpgrade(false);
+                    }}
+                    onClose={() => setShowUpgrade(false)}
+                />
+            )}
         </div>
     );
 };

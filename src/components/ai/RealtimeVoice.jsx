@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { voiceAI } from '../../services/voiceAI';
+import usageLimitService from '../../services/usageLimits';
 import './RealtimeVoice.css';
 
 // ═══════════════════════════════════════════════════════════════
 // NEXUS AI - PREMIUM VOICE AI
 // Browser STT → Groq LLaMA 3.3 → ElevenLabs TTS (French Voice)
-// Created by Imane Taouss Badaoui
 // ═══════════════════════════════════════════════════════════════
 
 // Welcome message spoken when page opens
-const WELCOME_MESSAGE = "Bonjour, je suis créée par Imane Taouss Badaoui, comment puis-je vous aider aujourd'hui?";
+const WELCOME_MESSAGE = "Bonjour, comment puis-je vous aider aujourd'hui ?";
 
 const translations = {
     fr: {
@@ -25,7 +25,7 @@ const translations = {
         instructions: 'Cliquez sur l\'orb et parlez naturellement',
         conversationTitle: 'Conversation',
         clearHistory: 'Effacer',
-        badge: '🎯 Créé par Imane Taouss Badaoui'
+        badge: '🎯 Assistant Intelligent'
     },
     ar: {
         title: 'NEXUS AI',
@@ -40,7 +40,7 @@ const translations = {
         instructions: 'اضغط وتحدث بشكل طبيعي',
         conversationTitle: 'المحادثة',
         clearHistory: 'مسح',
-        badge: '🎯 Créé par Imane Taouss Badaoui'
+        badge: '🎯 Assistant Intelligent'
     },
     en: {
         title: 'NEXUS AI',
@@ -55,7 +55,7 @@ const translations = {
         instructions: 'Click the orb and speak naturally',
         conversationTitle: 'Conversation',
         clearHistory: 'Clear',
-        badge: '🎯 Created by Imane Taouss Badaoui'
+        badge: '🎯 Intelligent Assistant'
     }
 };
 
@@ -132,6 +132,9 @@ const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
             console.log('═══════════════════════════════════════════');
             console.log('✅ AI RESPONSE:', aiResponse);
             console.log('═══════════════════════════════════════════');
+
+            // Record usage when we get a successful AI response
+            usageLimitService.recordUse('aiVoice');
 
             setResponse(aiResponse);
             setConversationHistory(prev => [...prev, {

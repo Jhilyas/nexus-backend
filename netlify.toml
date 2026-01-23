@@ -7,7 +7,36 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# SPA Fallback - All routes to index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# API Redirects to Supabase Edge Functions
+[[redirects]]
+  from = "/api/ai/chat"
+  to = "https://regjcunrfsbunroyvnii.supabase.co/functions/v1/ai-chat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/ai/voice"
+  to = "https://regjcunrfsbunroyvnii.supabase.co/functions/v1/ai-voice"
+  status = 200
+  force = true
+
+# Security Headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

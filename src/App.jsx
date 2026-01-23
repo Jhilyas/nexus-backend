@@ -6,6 +6,10 @@ import OrientationEngine from './components/ai/OrientationEngine'
 import TimelineSimulator from './components/dashboard/TimelineSimulator'
 import AIMentor from './components/ai/AIMentor'
 import RealtimeVoice from './components/ai/RealtimeVoice'
+import HandController from './components/immersive/HandController'
+import usageLimitService from './services/usageLimits'
+import { UsageBadge } from './components/common/UpgradePrompt'
+
 import PricingSection from './components/pricing/PricingSection'
 import Dashboard from './components/dashboard/Dashboard'
 import SchoolsExplorer from './components/explore/SchoolsExplorer'
@@ -20,6 +24,7 @@ function App() {
   const [user, setUser] = useState(null)
   const [showMentor, setShowMentor] = useState(false)
   const [showVoiceMentor, setShowVoiceMentor] = useState(false)
+
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [language, setLanguage] = useState('fr')
   const [showSplash, setShowSplash] = useState(true)
@@ -27,6 +32,11 @@ function App() {
   const [isMuted, setIsMuted] = useState(false)
   const [currentTrack, setCurrentTrack] = useState(0)
   const audioRef = useRef(null)
+
+  // Usage tracking - updates when modals close
+  const [usageKey, setUsageKey] = useState(0)
+  const refreshUsage = () => setUsageKey(k => k + 1)
+
 
   // Liste des pistes musicales
   const musicTracks = [
@@ -107,6 +117,9 @@ function App() {
     setUser(userData)
     setIsLoggedIn(true)
     localStorage.setItem('nexus_user', JSON.stringify(userData))
+    // Reset usage limits for new login (gives fresh 10 uses)
+    usageLimitService.reset()
+    refreshUsage()
     setCurrentPage('dashboard')
   }
 
@@ -143,6 +156,7 @@ function App() {
             isPage={true}
           />
         )
+
       default:
         return (
           <>
@@ -155,7 +169,7 @@ function App() {
             <OrientationEngine language={language} />
             <TimelineSimulator language={language} />
             <SchoolsExplorer language={language} />
-            <PricingSection language={language} />
+            <PricingSection language={language} user={user} onLoginRequired={handleLogin} />
           </>
         )
     }
@@ -178,6 +192,7 @@ function App() {
       {!showSplash && (
         <div className="app">
           <CosmicBackground />
+          <HandController />
           <Navbar
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
@@ -196,7 +211,7 @@ function App() {
           {/* AI Mentor - Available when logged in */}
           <AIMentor
             isOpen={showMentor}
-            onClose={() => setShowMentor(false)}
+            onClose={() => { setShowMentor(false); refreshUsage(); }}
             language={language}
           />
 
@@ -204,7 +219,7 @@ function App() {
           {showVoiceMentor && (
             <RealtimeVoice
               language={language}
-              onBack={() => setShowVoiceMentor(false)}
+              onBack={() => { setShowVoiceMentor(false); refreshUsage(); }}
               isPage={false}
             />
           )}
@@ -219,29 +234,66 @@ function App() {
 
           <Footer language={language} />
 
-          {/* Floating Buttons - Show on home for EVERYONE (no login required!) */}
-          {currentPage === 'home' && (
-            <>
-              {/* Voice Mentor Button - Accessible to ALL! */}
+
+
+          {/* ═══════════════════════════════════════════════════════════════
+              APPLE VISION PRO STYLE FLOATING ACTION BAR
+              Premium glassmorphism design with all AI features
+              ═══════════════════════════════════════════════════════════════ */}
+          <div className="vision-pro-action-bar">
+            <div className="vision-pro-bar-inner">
+              {/* AI Voice Button */}
               <button
-                className="floating-voice-btn"
+                className="vision-pro-btn voice"
                 onClick={() => setShowVoiceMentor(true)}
-                title="Conversation vocale avec NEXUS AI"
+                title="AI Voice"
               >
-                <span>🎤</span>
-                <div className="voice-btn-pulse"></div>
+                <span className="btn-emoji">🎙️</span>
+                <span className="btn-label">Voice</span>
+                {!usageLimitService.isPro() && (
+                  <UsageBadge remaining={usageLimitService.getRemaining('aiVoice')} />
+                )}
               </button>
 
-              {/* Text Mentor Button */}
+              {/* Divider */}
+              <div className="vision-pro-divider"></div>
+
+              {/* Hand Tracking Button */}
               <button
-                className="floating-mentor-btn"
-                onClick={() => setShowMentor(true)}
+                className="vision-pro-btn hand"
+                onClick={() => {
+                  const handBtn = document.querySelector('.hand-toggle-btn');
+                  if (handBtn) handBtn.click();
+                }}
+                title="Hand Tracking"
               >
-                <span>🧠</span>
-                <div className="floating-pulse"></div>
+                <span className="btn-emoji">🖐️</span>
+                <span className="btn-label">Hand</span>
+                {!usageLimitService.isPro() && (
+                  <UsageBadge remaining={usageLimitService.getRemaining('handTracking')} />
+                )}
               </button>
-            </>
-          )}
+
+              {/* Divider */}
+              <div className="vision-pro-divider"></div>
+
+              {/* AI Chat Button */}
+              <button
+                className="vision-pro-btn chat"
+                onClick={() => setShowMentor(true)}
+                title="AI Chat"
+              >
+                <span className="btn-emoji">💬</span>
+                <span className="btn-label">Chat</span>
+                {!usageLimitService.isPro() && (
+                  <UsageBadge remaining={usageLimitService.getRemaining('aiChat')} />
+                )}
+              </button>
+            </div>
+
+            {/* Ambient glow effect */}
+            <div className="vision-pro-ambient"></div>
+          </div>
         </div>
       )}
     </>

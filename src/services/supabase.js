@@ -1,5 +1,6 @@
 // ═══════════════════════════════════════════════════════════════
 // NEXUS - SUPABASE CLIENT CONFIGURATION
+// Full Supabase Backend (Auth + Database + Edge Functions)
 // ═══════════════════════════════════════════════════════════════
 
 import { createClient } from '@supabase/supabase-js';
@@ -17,7 +18,7 @@ export const supabase = createClient(
 );
 
 // ═══════════════════════════════════════════════════════════════
-// AUTHENTICATION HELPERS
+// AUTHENTICATION HELPERS (Using Supabase Auth)
 // ═══════════════════════════════════════════════════════════════
 
 export const auth = {
@@ -71,14 +72,14 @@ export const auth = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// DATABASE HELPERS
+// DATABASE HELPERS (Direct Supabase Queries)
 // ═══════════════════════════════════════════════════════════════
 
 export const db = {
     // Schools
     async getSchools(filters = {}) {
         let query = supabase.from('schools').select('*');
-        
+
         if (filters.domain && filters.domain !== 'all') {
             query = query.eq('domain', filters.domain);
         }
@@ -91,7 +92,7 @@ export const db = {
         if (filters.search) {
             query = query.or(`name.ilike.%${filters.search}%,full_name.ilike.%${filters.search}%`);
         }
-        
+
         const { data, error } = await query;
         if (error) throw error;
         return data;
@@ -110,11 +111,11 @@ export const db = {
     // Careers
     async getCareers(filters = {}) {
         let query = supabase.from('careers').select('*');
-        
+
         if (filters.domain && filters.domain !== 'all') {
             query = query.eq('domain', filters.domain);
         }
-        
+
         const { data, error } = await query;
         if (error) throw error;
         return data.map(career => ({
@@ -151,6 +152,28 @@ export const db = {
         const { data, error } = await supabase
             .from('profiles')
             .update({ ...updates, updated_at: new Date().toISOString() })
+            .eq('id', userId)
+            .select()
+            .single();
+        if (error) throw error;
+        return data;
+    },
+
+    // Subscription management
+    async getSubscription(userId) {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('subscription')
+            .eq('id', userId)
+            .single();
+        if (error) throw error;
+        return data?.subscription || 'free';
+    },
+
+    async updateSubscription(userId, planId) {
+        const { data, error } = await supabase
+            .from('profiles')
+            .update({ subscription: planId, updated_at: new Date().toISOString() })
             .eq('id', userId)
             .select()
             .single();
@@ -231,16 +254,43 @@ export const db = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// AI CHAT (Via Edge Function)
+// AI CHAT (Via Supabase Edge Function)
 // ═══════════════════════════════════════════════════════════════
 
 export const ai = {
     async chat(message, conversationHistory = [], mode = 'mentor', language = 'fr') {
-        const { data, error } = await supabase.functions.invoke('ai-chat', {
-            body: { message, conversationHistory, mode, language }
-        });
-        if (error) throw error;
-        return data;
+        try {
+            // Call Supabase Edge Function
+            const { data, error } = await supabase.functions.invoke('ai-chat', {
+                body: {
+                    message,
+                    conversationHistory,
+                    mode,
+                    language
+                }
+            });
+
+            if (error) throw error;
+
+            return {
+                success: data.success,
+                response: data.response
+            };
+        } catch (error) {
+            console.error('AI Chat Error:', error);
+
+            // Fallback responses
+            const fallbackResponses = {
+                fr: "Désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler ?",
+                ar: "أعتذر، أواجه صعوبات تقنية. هل يمكنك إعادة صياغة سؤالك؟",
+                en: "Sorry, I'm experiencing technical difficulties. Could you rephrase?"
+            };
+
+            return {
+                success: false,
+                response: fallbackResponses[language] || fallbackResponses.fr
+            };
+        }
     }
 };
 
@@ -254,7 +304,7 @@ export const stats = {
             supabase.from('schools').select('id', { count: 'exact', head: true }),
             supabase.from('careers').select('id', { count: 'exact', head: true })
         ]);
-        
+
         return {
             schools: schools.count || 0,
             careers: careers.count || 0,

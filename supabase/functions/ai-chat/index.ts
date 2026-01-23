@@ -1,10 +1,9 @@
 // ═══════════════════════════════════════════════════════════════
-// NEXUS - AI CHAT EDGE FUNCTION FOR SUPABASE
+// NEXUS - AI CHAT EDGE FUNCTION (Powered by MISTRAL AI)
 // Deploy to: supabase/functions/ai-chat/index.ts
 // ═══════════════════════════════════════════════════════════════
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -25,10 +24,11 @@ Tes connaissances:
 - Carrières et salaires au Maroc
 - Bourses et aides financières
 
-Règles:
-- Réponds dans la même langue que l'utilisateur (français, arabe ou anglais)
-- Sois concis: 2-3 paragraphes maximum
-- Utilise des emojis avec modération`;
+Règles IMPORTANTES:
+- Tu dois répondre de manière ULTRA CONCISE (2-3 phrases maximum).
+- Réponds dans la même langue que l'utilisateur (français, arabe ou anglais).
+- Sois direct et utile. Pas de blabla.
+- Utilise des emojis avec modération.`;
 
 serve(async (req) => {
     // Handle CORS preflight
@@ -38,73 +38,84 @@ serve(async (req) => {
 
     try {
         const { message, conversationHistory = [], mode = 'mentor', language = 'fr' } = await req.json();
+        const apiKey = Deno.env.get('MISTRAL_API_KEY');
+
+        if (!apiKey) {
+            throw new Error('Missing MISTRAL_API_KEY');
+        }
 
         const modePrompts = {
-            mentor: 'Tu es un mentor éducatif professionnel, sage et expérimenté.',
-            friend: 'Tu es un ami proche et bienveillant. Tu parles de manière décontractée.',
-            motivator: 'Tu es un coach motivant et énergique! Tu encourages avec enthousiasme!',
-            calm: 'Tu es calme, posé et rassurant. Tu aides à réduire le stress.'
+            mentor: 'Tu es un mentor éducatif professionnel et sage.',
+            friend: 'Tu es un ami proche. Tu parles de manière décontractée.',
+            motivator: 'Tu es un coach motivant! Tu encourages avec énergie!',
+            calm: 'Tu es calme et rassurant.'
         };
 
-        const systemPrompt = `${SAGE_SYSTEM_PROMPT}\n\nMode actuel: ${modePrompts[mode] || modePrompts.mentor}`;
+        const currentModePrompt = modePrompts[mode] || modePrompts.mentor;
+        const systemInstruction = `${SAGE_SYSTEM_PROMPT}\n\nMode actuel: ${currentModePrompt}\nRAPPEL: SOIS BREF.`;
 
-        // Build messages for OpenAI
+        // Mistral API Payload (OpenAI Compatible)
         const messages = [
-            { role: 'system', content: systemPrompt },
+            { role: 'system', content: systemInstruction },
             ...conversationHistory.slice(-8).map((msg: any) => ({
-                role: msg.role,
+                role: msg.role === 'assistant' ? 'assistant' : 'user',
                 content: msg.content
             })),
             { role: 'user', content: message }
         ];
 
-        // Call Groq API (LLaMA 3.3)
-        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        // Call Mistral API
+        const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${Deno.env.get('GROQ_API_KEY')}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
-                messages,
-                max_tokens: 1024,
-                temperature: mode === 'calm' ? 0.5 : mode === 'motivator' ? 0.9 : 0.7
+                model: 'mistral-small-latest',
+                messages: messages,
+                max_tokens: 500,
+                temperature: 0.7,
+                safe_prompt: true
             })
         });
 
-        if (!groqResponse.ok) {
-            const errorText = await groqResponse.text();
-            throw new Error(`Groq API error: ${groqResponse.status} - ${errorText}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Mistral API Error: ${response.status} - ${errorText}`);
         }
 
-        const completion = await groqResponse.json();
-        const reply = completion.choices[0].message.content;
+        const data = await response.json();
+        const reply = data.choices[0]?.message?.content;
+
+        if (!reply) {
+            throw new Error('Empty response from Mistral');
+        }
 
         return new Response(
             JSON.stringify({
                 success: true,
                 response: reply,
-                usage: completion.usage
             }),
             {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 200
             }
         );
+
     } catch (error: any) {
         console.error('AI Chat Error:', error);
 
-        const fallbackResponses = {
-            fr: "Désolé, je réfléchis trop vite ! Peux-tu répéter ?",
+        const fallbackResponses: any = {
+            fr: "Désolé, je rencontre un petit problème. Peux-tu répéter ?",
             ar: "عذراً، أواجه مشكلة تقنية بسيطة. هل يمكنك إعادة السؤال؟",
-            en: "Sorry, I'm thinking too fast! Can you repeat that?"
+            en: "Sorry, having a small issue. Can you repeat that?"
         };
 
         return new Response(
             JSON.stringify({
                 success: false,
-                response: fallbackResponses.fr,
+                response: `${fallbackResponses.fr} (Debug: ${error.message})`,
                 error: error.message
             }),
             {

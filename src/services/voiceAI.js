@@ -204,7 +204,7 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
 
     async getResponse(userMessage, detectedLanguage = null) {
         console.log('═══════════════════════════════════════════');
-        console.log('🧠 GROQ CHAT - Getting ULTRA FAST AI Response (via Supabase)');
+        console.log('🧠 GROQ CHAT - Getting AI Response via Supabase Edge Function');
         console.log(`📝 User said: "${userMessage}"`);
         console.log(`🌍 Language: ${detectedLanguage}`);
         console.log('═══════════════════════════════════════════');
@@ -229,12 +229,15 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
         const language = langMap[detectedLanguage?.toLowerCase()] || 'fr';
 
         try {
-            console.log('📤 Calling Supabase Edge Function (Groq)...');
+            // Import supabase dynamically to avoid circular imports
+            const { supabase } = await import('./supabase.js');
+
+            console.log('📤 Calling Supabase Edge Function (ai-chat)...');
 
             const { data, error } = await supabase.functions.invoke('ai-chat', {
                 body: {
                     message: userMessage,
-                    conversationHistory: this.conversationHistory.slice(0, -1), // Don't include current message
+                    conversationHistory: this.conversationHistory.slice(0, -1),
                     mode: 'mentor',
                     language: language
                 }
@@ -252,7 +255,7 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
             }
 
             console.log('═══════════════════════════════════════════');
-            console.log(`✅ GROQ AI RESPONSE: "${aiMessage}"`);
+            console.log(`✅ AI RESPONSE: "${aiMessage}"`);
             console.log('═══════════════════════════════════════════');
 
             this.conversationHistory.push({
@@ -264,7 +267,7 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
 
         } catch (error) {
             console.error('❌ Groq Chat Error:', error);
-            return "Désolé, erreur de connexion. Vérifiez votre internet.";
+            return "Désolé, erreur de connexion. Réessaie dans un instant!";
         }
     }
 

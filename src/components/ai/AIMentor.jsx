@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { ai } from '../../services/supabase'
+import usageLimitService from '../../services/usageLimits'
+import UpgradePrompt from '../common/UpgradePrompt'
 import './AIMentor.css'
 
 const translations = {
@@ -21,7 +23,7 @@ const translations = {
             'Quel métier correspond à mon profil scientifique ?',
             'Explique-moi les filières après le bac au Maroc'
         ],
-        greeting: 'Bonjour ! Je suis NEXUS AI, créé par Imane Taouss Badaoui. Je suis spécialisé dans l\'orientation éducative au Maroc. Posez-moi vos questions sur les écoles, les filières, les concours ou votre avenir professionnel !',
+        greeting: 'Bonjour ! Je suis NEXUS AI. Je suis spécialisé dans l\'orientation éducative au Maroc. Posez-moi vos questions sur les écoles, les filières, les concours ou votre avenir professionnel !',
         errorMessage: 'Désolé, une erreur s\'est produite. Veuillez réessayer.'
     },
     ar: {
@@ -42,7 +44,7 @@ const translations = {
             'أي مهنة تناسب ملفي العلمي؟',
             'اشرح لي المسارات بعد البكالوريا في المغرب'
         ],
-        greeting: 'مرحبا! أنا NEXUS AI، صنعتني إيمان طاوس بادوي. أنا متخصص في التوجيه التعليمي في المغرب. اسألني عن المدارس، المسارات، المباريات أو مستقبلك المهني!',
+        greeting: 'مرحبا! أنا NEXUS AI. أنا متخصص في التوجيه التعليمي في المغرب. اسألني عن المدارس، المسارات، المباريات أو مستقبلك المهني!',
         errorMessage: 'عذرا، حدث خطأ. يرجى المحاولة مرة أخرى.'
     },
     en: {
@@ -63,7 +65,7 @@ const translations = {
             'Which career matches my scientific profile?',
             'Explain the paths after high school in Morocco'
         ],
-        greeting: 'Hello! I\'m NEXUS AI, created by Imane Taouss Badaoui. I specialize in educational guidance in Morocco. Ask me about schools, programs, exams, or your professional future!',
+        greeting: 'Hello! I\'m NEXUS AI. I specialize in educational guidance in Morocco. Ask me about schools, programs, exams, or your professional future!',
         errorMessage: 'Sorry, an error occurred. Please try again.'
     }
 }
@@ -80,6 +82,9 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
     const [input, setInput] = useState('')
     const [isTyping, setIsTyping] = useState(false)
     const [mode, setMode] = useState('mentor')
+    const [showUpgrade, setShowUpgrade] = useState(false)
+    const [promptType, setPromptType] = useState('upgrade') // 'upgrade' | 'follow'
+    const [remainingUses, setRemainingUses] = useState(usageLimitService.getRemaining('aiChat'))
     const messagesEndRef = useRef(null)
     const t = translations[language]
     const isRTL = language === 'ar'
@@ -97,6 +102,22 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
     const handleSend = async () => {
         if (!input.trim()) return
 
+        // Check usage limit
+        const usage = usageLimitService.canUse('aiChat')
+        if (!usage.allowed) {
+            if (usage.reason === 'bonus_needed') {
+                setPromptType('follow')
+            } else {
+                setPromptType('upgrade')
+            }
+            setShowUpgrade(true)
+            return
+        }
+
+        // Record usage
+        usageLimitService.recordUse('aiChat')
+        setRemainingUses(usageLimitService.getRemaining('aiChat'))
+
         const userMessage = { role: 'user', content: input }
         setMessages(prev => [...prev, userMessage])
         setInput('')
@@ -109,7 +130,8 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
             if (data.success && data.response) {
                 setMessages(prev => [...prev, { role: 'assistant', content: data.response }])
             } else {
-                setMessages(prev => [...prev, { role: 'assistant', content: t.errorMessage }])
+                // Show backend error for debugging (includes "Debug: ...")
+                setMessages(prev => [...prev, { role: 'assistant', content: data.response || t.errorMessage }])
             }
         } catch (error) {
             console.error('Error calling AI API:', error)
@@ -247,6 +269,20 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
                     </div>
                 </div>
             </div>
+
+            {showUpgrade && (
+                <UpgradePrompt
+                    feature="aiChat"
+                    type={promptType}
+                    usedCount={promptType === 'follow' ? 10 : 15}
+                    onFollow={() => {
+                        usageLimitService.claimBonus()
+                        setRemainingUses(usageLimitService.getRemaining('aiChat'))
+                        setShowUpgrade(false)
+                    }}
+                    onClose={() => setShowUpgrade(false)}
+                />
+            )}
         </div>
     )
 }

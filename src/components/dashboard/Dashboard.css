@@ -495,3 +495,104 @@
         font-size: 1.5rem;
     }
 }
+
+/* Plan Badges */
+.plan-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    vertical-align: middle;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.title-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Badge Variants */
+.bg-slate-500 {
+    background-color: #64748b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gold-glow {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.elite-glow {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.diamond-glow {
+    background: linear-gradient(45deg, #06b6d4, #8b5cf6, #ec4899);
+    background-size: 200% 200%;
+    animation: gradientFlow 3s ease infinite;
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.diamond-glow::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(45deg);
+    }
+
+    20% {
+        transform: translateX(100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg);
+    }
+}
+
+/* RTL Support for Badge */
+.rtl .plan-badge {
+    margin-left: 0;
+    margin-right: 1rem;
+}

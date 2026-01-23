@@ -1,19 +1,31 @@
-# Configuration Render pour NEXUS Backend
-
+# Render.com Blueprint for NEXUS Backend
 services:
   - type: web
     name: nexus-backend
     runtime: node
+    region: frankfurt
+    plan: free
     buildCommand: npm install
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
+      - key: PORT
+        value: 10000
       - key: NODE_ENV
         value: production
-      - key: FRONTEND_URL
-        value: https://nexus-morocco.com
-      - key: JWT_SECRET
-        generateValue: true
       - key: GROQ_API_KEY
         sync: false
-      - key: OPENAI_API_KEY
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        value: https://nexus-morocco.com
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_SECRET_KEY
+        sync: false
+      - key: PAYPAL_MODE
+        value: live
+      - key: GOOGLE_CLOUD_API_KEY
         sync: false

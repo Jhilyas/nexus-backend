@@ -110,57 +110,57 @@
     width: 140px;
     height: 140px;
     border-radius: 50%;
-    background: linear-gradient(135deg, 
-        rgba(102, 126, 234, 0.3) 0%, 
-        rgba(118, 75, 162, 0.3) 100%);
+    background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.3) 0%,
+            rgba(118, 75, 162, 0.3) 100%);
     border: 2px solid rgba(102, 126, 234, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all var(--transition-base);
-    box-shadow: 
+    box-shadow:
         0 0 60px rgba(102, 126, 234, 0.3),
         inset 0 0 40px rgba(102, 126, 234, 0.1);
 }
 
 .voice-orb-container.idle .voice-orb-inner {
-    background: linear-gradient(135deg, 
-        rgba(102, 126, 234, 0.2) 0%, 
-        rgba(118, 75, 162, 0.2) 100%);
+    background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.2) 0%,
+            rgba(118, 75, 162, 0.2) 100%);
 }
 
 .voice-orb-container.listening .voice-orb-inner {
-    background: linear-gradient(135deg, 
-        rgba(16, 185, 129, 0.3) 0%, 
-        rgba(4, 120, 87, 0.3) 100%);
+    background: linear-gradient(135deg,
+            rgba(16, 185, 129, 0.3) 0%,
+            rgba(4, 120, 87, 0.3) 100%);
     border-color: rgba(16, 185, 129, 0.6);
-    box-shadow: 
+    box-shadow:
         0 0 80px rgba(16, 185, 129, 0.4),
         inset 0 0 40px rgba(16, 185, 129, 0.1);
 }
 
 .voice-orb-container.processing .voice-orb-inner,
 .voice-orb-container.connecting .voice-orb-inner {
-    background: linear-gradient(135deg, 
-        rgba(245, 158, 11, 0.3) 0%, 
-        rgba(217, 119, 6, 0.3) 100%);
+    background: linear-gradient(135deg,
+            rgba(245, 158, 11, 0.3) 0%,
+            rgba(217, 119, 6, 0.3) 100%);
     border-color: rgba(245, 158, 11, 0.6);
 }
 
 .voice-orb-container.speaking .voice-orb-inner {
-    background: linear-gradient(135deg, 
-        rgba(102, 126, 234, 0.4) 0%, 
-        rgba(240, 147, 251, 0.4) 100%);
+    background: linear-gradient(135deg,
+            rgba(102, 126, 234, 0.4) 0%,
+            rgba(240, 147, 251, 0.4) 100%);
     border-color: rgba(240, 147, 251, 0.6);
-    box-shadow: 
+    box-shadow:
         0 0 100px rgba(240, 147, 251, 0.4),
         inset 0 0 40px rgba(240, 147, 251, 0.1);
 }
 
 .voice-orb-container.error .voice-orb-inner {
-    background: linear-gradient(135deg, 
-        rgba(239, 68, 68, 0.3) 0%, 
-        rgba(185, 28, 28, 0.3) 100%);
+    background: linear-gradient(135deg,
+            rgba(239, 68, 68, 0.3) 0%,
+            rgba(185, 28, 28, 0.3) 100%);
     border-color: rgba(239, 68, 68, 0.6);
 }
 
@@ -214,6 +214,7 @@
         transform: translate(-50%, -50%) scale(1);
         opacity: 0.6;
     }
+
     100% {
         transform: translate(-50%, -50%) scale(1.5);
         opacity: 0;
@@ -242,15 +243,34 @@
     animation: wave-bounce 0.6s ease-in-out infinite alternate;
 }
 
-.voice-wave-bar:nth-child(1) { height: 10px; }
-.voice-wave-bar:nth-child(2) { height: 20px; }
-.voice-wave-bar:nth-child(3) { height: 30px; }
-.voice-wave-bar:nth-child(4) { height: 20px; }
-.voice-wave-bar:nth-child(5) { height: 10px; }
+.voice-wave-bar:nth-child(1) {
+    height: 10px;
+}
+
+.voice-wave-bar:nth-child(2) {
+    height: 20px;
+}
+
+.voice-wave-bar:nth-child(3) {
+    height: 30px;
+}
+
+.voice-wave-bar:nth-child(4) {
+    height: 20px;
+}
+
+.voice-wave-bar:nth-child(5) {
+    height: 10px;
+}
 
 @keyframes wave-bounce {
-    0% { transform: scaleY(0.5); }
-    100% { transform: scaleY(1); }
+    0% {
+        transform: scaleY(0.5);
+    }
+
+    100% {
+        transform: scaleY(1);
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -271,7 +291,9 @@
 }
 
 @keyframes spin {
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -323,60 +345,7 @@
     color: var(--nexus-text-tertiary);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   FLOATING VOICE BUTTON
-   ═══════════════════════════════════════════════════════════════ */
-
-.floating-voice-btn {
-    position: fixed;
-    bottom: 100px;
-    right: 24px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--nexus-aurora-1), var(--nexus-aurora-2));
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    box-shadow: 
-        0 4px 20px rgba(102, 126, 234, 0.4),
-        0 0 40px rgba(102, 126, 234, 0.2);
-    transition: all var(--transition-base);
-    z-index: var(--z-sticky);
-}
-
-.floating-voice-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 
-        0 6px 30px rgba(102, 126, 234, 0.5),
-        0 0 60px rgba(102, 126, 234, 0.3);
-}
-
-.floating-voice-btn:active {
-    transform: scale(0.95);
-}
-
-.floating-voice-btn .voice-btn-pulse {
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    border: 2px solid var(--nexus-aurora-1);
-    animation: voice-btn-pulse 2s ease-out infinite;
-}
-
-@keyframes voice-btn-pulse {
-    0% {
-        transform: scale(1);
-        opacity: 0.6;
-    }
-    100% {
-        transform: scale(1.4);
-        opacity: 0;
-    }
-}
+/* Floating button styles are defined in index.css */
 
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE DESIGN
@@ -390,21 +359,14 @@
         height: 100%;
         justify-content: center;
     }
-    
+
     .voice-orb-container {
         width: 180px;
         height: 180px;
     }
-    
+
     .voice-orb-inner {
         width: 120px;
         height: 120px;
-    }
-    
-    .floating-voice-btn {
-        bottom: 80px;
-        right: 16px;
-        width: 56px;
-        height: 56px;
     }
 }
