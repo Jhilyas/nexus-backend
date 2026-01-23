@@ -19,7 +19,7 @@ const translations = {
         privacy: 'Confidentialité',
         terms: 'Conditions',
         rights: 'Tous droits réservés.',
-        madeWith: 'Créé par la Team Nexus',
+        madeWith: 'Créé par Imane Taouss Bdaoui',
         inMorocco: 'au Maroc'
     },
     ar: {
@@ -40,7 +40,7 @@ const translations = {
         privacy: 'الخصوصية',
         terms: 'الشروط',
         rights: 'جميع الحقوق محفوظة.',
-        madeWith: 'تم إنشاؤه بواسطة فريق Nexus',
+        madeWith: 'تم إنشاؤه بواسطة إيمان طاووس بدوي',
         inMorocco: 'في المغرب'
     },
     en: {
@@ -61,7 +61,7 @@ const translations = {
         privacy: 'Privacy',
         terms: 'Terms',
         rights: 'All rights reserved.',
-        madeWith: 'Created by Nexus Team',
+        madeWith: 'Created by Imane Taouss Bdaoui',
         inMorocco: 'in Morocco'
     }
 }

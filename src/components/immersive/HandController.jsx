@@ -14,8 +14,7 @@ const HandController = () => {
     const [handDetected, setHandDetected] = useState(false)
     const [gesture, setGesture] = useState('none')
     const [fps, setFps] = useState(0)
-    const [showUpgrade, setShowUpgrade] = useState(false)
-    const [promptType, setPromptType] = useState('upgrade') // 'upgrade' | 'follow'
+    const [upgradeParams, setUpgradeParams] = useState({ show: false, type: 'upgrade' })
     const [remainingUses, setRemainingUses] = useState(usageLimitService.getRemaining('handTracking'))
 
     const videoRef = useRef(null)
@@ -253,12 +252,10 @@ const HandController = () => {
             // Check usage limit
             const usage = usageLimitService.canUse('handTracking')
             if (!usage.allowed) {
-                if (usage.reason === 'bonus_needed') {
-                    setPromptType('follow')
-                } else {
-                    setPromptType('upgrade')
-                }
-                setShowUpgrade(true)
+                setUpgradeParams({
+                    show: true,
+                    type: usage.reason === 'bonus_needed' ? 'follow' : 'upgrade'
+                })
                 return
             }
 
@@ -325,17 +322,17 @@ const HandController = () => {
                 </>
             )}
 
-            {showUpgrade && (
+            {upgradeParams.show && (
                 <UpgradePrompt
                     feature="handTracking"
-                    usedCount={promptType === 'follow' ? 10 : 15}
-                    type={promptType}
+                    usedCount={upgradeParams.type === 'follow' ? 10 : 15}
+                    type={upgradeParams.type}
                     onFollow={() => {
                         usageLimitService.claimBonus()
-                        setShowUpgrade(false)
+                        setUpgradeParams(prev => ({ ...prev, show: false }))
                         setRemainingUses(usageLimitService.getRemaining('handTracking'))
                     }}
-                    onClose={() => setShowUpgrade(false)}
+                    onClose={() => setUpgradeParams(prev => ({ ...prev, show: false }))}
                 />
             )}
         </div>

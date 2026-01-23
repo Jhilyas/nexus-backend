@@ -9,7 +9,7 @@ import './RealtimeVoice.css';
 // ═══════════════════════════════════════════════════════════════
 
 // Welcome message spoken when page opens
-const WELCOME_MESSAGE = "Bonjour, comment puis-je vous aider aujourd'hui ?";
+const WELCOME_MESSAGE = "Bonjour, je suis créé par Imane Taouss Bdaoui, comment puis-je vous aider aujourd'hui ?";
 
 const translations = {
     fr: {
@@ -69,8 +69,7 @@ const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
     const [conversationHistory, setConversationHistory] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [detectedLanguage, setDetectedLanguage] = useState(null);
-    const [showUpgrade, setShowUpgrade] = useState(false);
-    const [promptType, setPromptType] = useState('upgrade'); // 'upgrade' | 'follow'
+    const [upgradeParams, setUpgradeParams] = useState({ show: false, type: 'upgrade' });
     const [remainingUses, setRemainingUses] = useState(usageLimitService.getRemaining('aiVoice'));
 
     const isProcessingRef = useRef(false);
@@ -224,14 +223,13 @@ const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
     const handleOrbClick = useCallback(() => {
         if (status === 'idle' || status === 'error') {
             // Check usage limit FIRST
+            // Check usage limit FIRST
             const usage = usageLimitService.canUse('aiVoice');
             if (!usage.allowed) {
-                if (usage.reason === 'bonus_needed') {
-                    setPromptType('follow');
-                } else {
-                    setPromptType('upgrade');
-                }
-                setShowUpgrade(true);
+                setUpgradeParams({
+                    show: true,
+                    type: usage.reason === 'bonus_needed' ? 'follow' : 'upgrade'
+                });
                 return;
             }
             startListening();
@@ -372,17 +370,17 @@ const RealtimeVoice = ({ language = 'fr', onBack, isPage = true }) => {
                     </svg>
                 </button>
                 {content}
-                {showUpgrade && (
+                {upgradeParams.show && (
                     <UpgradePrompt
                         feature="aiVoice"
-                        type={promptType}
-                        usedCount={promptType === 'follow' ? 10 : 15}
+                        type={upgradeParams.type}
+                        usedCount={upgradeParams.type === 'follow' ? 10 : 15}
                         onFollow={() => {
                             usageLimitService.claimBonus();
-                            setShowUpgrade(false);
+                            setUpgradeParams(prev => ({ ...prev, show: false }));
                             setRemainingUses(usageLimitService.getRemaining('aiVoice'));
                         }}
-                        onClose={() => setShowUpgrade(false)}
+                        onClose={() => setUpgradeParams(prev => ({ ...prev, show: false }))}
                     />
                 )}
             </div>
