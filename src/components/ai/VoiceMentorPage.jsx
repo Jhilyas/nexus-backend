@@ -78,7 +78,7 @@ const VoiceMentorPage = ({ language = 'fr', onBack }) => {
         const sayHello = async () => {
             // Short delay to ensure voices are loaded
             setTimeout(async () => {
-                await voiceAI.speak("Bonjour, comment puis-je vous aider aujourd'hui ?", { voice: selectedVoice });
+                await voiceAI.speak("Bonjour, je suis créé par Imane Taouss Badaoui, comment puis-je vous aider ?", { voice: selectedVoice });
             }, 500);
         };
         sayHello();
