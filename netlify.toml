@@ -7,6 +7,12 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Google Search Console Verification (must be before SPA fallback)
+[[redirects]]
+  from = "/google9c5fe29fb722ce09.html"
+  to = "/google9c5fe29fb722ce09.html"
+  status = 200
+
 # SPA Fallback - All routes to index.html
 [[redirects]]
   from = "/*"
