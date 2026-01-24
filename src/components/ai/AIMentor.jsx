@@ -83,7 +83,7 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
     const [isTyping, setIsTyping] = useState(false)
     const [mode, setMode] = useState('mentor')
     const [showUpgrade, setShowUpgrade] = useState(false)
-    const [promptType, setPromptType] = useState('upgrade') // 'upgrade' | 'follow'
+    const [promptType, setPromptType] = useState('follow') // 'follow' | 'upgrade' - follow shows FIRST
     const [remainingUses, setRemainingUses] = useState(usageLimitService.getRemaining('aiChat'))
     const messagesEndRef = useRef(null)
     const t = translations[language]
@@ -102,15 +102,22 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
     const handleSend = async () => {
         if (!input.trim()) return
 
-        // Check usage limit
+        // Check usage limit BEFORE sending
         const usage = usageLimitService.canUse('aiChat')
         if (!usage.allowed) {
-            if (usage.reason === 'bonus_needed') {
-                setPromptType('follow')
-            } else {
-                setPromptType('upgrade')
-            }
-            setShowUpgrade(true)
+            // Close chat first
+            onClose()
+            // Show appropriate prompt:
+            // - After 10 trials: show BONUS (follow for +5)
+            // - After 15 trials (all exhausted): show UPGRADE to Pro
+            setTimeout(() => {
+                if (usage.reason === 'bonus_needed') {
+                    setPromptType('follow')  // First: follow for +5 bonus
+                } else {
+                    setPromptType('upgrade') // After 15: upgrade to Pro
+                }
+                setShowUpgrade(true)
+            }, 100)
             return
         }
 
@@ -153,6 +160,35 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
         }
     }
 
+    // Show upgrade prompt even when chat is closed
+    if (!isOpen && showUpgrade) {
+        return (
+            <UpgradePrompt
+                feature="aiChat"
+                type={promptType}
+                usedCount={promptType === 'follow' ? 10 : 15}
+                onFollow={() => {
+                    usageLimitService.claimBonus()
+                    setRemainingUses(usageLimitService.getRemaining('aiChat'))
+                    setShowUpgrade(false)
+                    // Reopen chat after claiming bonus - dispatch event to parent
+                    setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('reopenAIChat'))
+                    }, 100)
+                }}
+                onClose={() => setShowUpgrade(false)}
+                onUpgrade={() => {
+                    setShowUpgrade(false)
+                    // Scroll to pricing section
+                    const pricingSection = document.getElementById('tarifs')
+                    if (pricingSection) {
+                        pricingSection.scrollIntoView({ behavior: 'smooth' })
+                    }
+                }}
+            />
+        )
+    }
+
     if (!isOpen) return null
 
     return (
@@ -160,6 +196,13 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
             <div className="mentor-container glass animate-scale-in">
                 {/* Header */}
                 <div className="mentor-header">
+                    {/* Close button on left */}
+                    <button className="close-btn" onClick={onClose} title="Fermer">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+
                     <div className="mentor-identity">
                         <div className="mentor-avatar">
                             <span>🧠</span>
@@ -194,11 +237,6 @@ const AIMentor = ({ isOpen, onClose, language = 'fr' }) => {
                             title="Mode vocal"
                         >
                             🎤
-                        </button>
-                        <button className="close-btn" onClick={onClose}>
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M18 6L6 18M6 6l12 12" />
-                            </svg>
                         </button>
                     </div>
                 </div>

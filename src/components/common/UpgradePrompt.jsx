@@ -64,7 +64,7 @@ const UpgradePrompt = ({
                             <br />
                             <span className="text-secondary">🎁 Envie de +5 essais supplémentaires ?</span>
                             <br />
-                            Suivez <strong>Imane Taouss Bdaoui</strong> sur Instagram !
+                            Suivez <strong>Imane Taouss Badaoui</strong> sur Instagram !
                         </p>
                         <button className="upgrade-btn instagram-btn" onClick={handleAction}>
                             <span className="upgrade-btn-icon">❤️</span>

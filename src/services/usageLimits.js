@@ -19,15 +19,7 @@ class UsageLimitService {
     }
 
     loadState() {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY)
-            if (stored) {
-                return JSON.parse(stored)
-            }
-        } catch (e) {
-            console.error('Failed to load usage state:', e)
-        }
-        return {
+        const defaultState = {
             counts: {
                 handTracking: 0,
                 aiVoice: 0,
@@ -35,6 +27,29 @@ class UsageLimitService {
             },
             instagramFollowed: false
         }
+
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY)
+            if (stored) {
+                const parsed = JSON.parse(stored)
+                // Ensure counts object exists with all required properties
+                return {
+                    counts: {
+                        handTracking: parsed?.counts?.handTracking ?? 0,
+                        aiVoice: parsed?.counts?.aiVoice ?? 0,
+                        aiChat: parsed?.counts?.aiChat ?? 0
+                    },
+                    instagramFollowed: parsed?.instagramFollowed ?? false
+                }
+            }
+        } catch (e) {
+            console.error('Failed to load usage state:', e)
+            // Clear corrupted data
+            try {
+                localStorage.removeItem(STORAGE_KEY)
+            } catch { }
+        }
+        return defaultState
     }
 
     saveState() {
@@ -177,12 +192,30 @@ class UsageLimitService {
 
     // Reset all counts (for testing or when user upgrades)
     reset() {
-        this.state.counts = {
-            handTracking: 0,
-            aiVoice: 0,
-            aiChat: 0
+        this.state = {
+            counts: {
+                handTracking: 0,
+                aiVoice: 0,
+                aiChat: 0
+            },
+            instagramFollowed: false
         }
         this.saveState()
+    }
+
+    // Full reset - clear everything from localStorage
+    fullReset() {
+        try {
+            localStorage.removeItem(STORAGE_KEY)
+        } catch { }
+        this.state = {
+            counts: {
+                handTracking: 0,
+                aiVoice: 0,
+                aiChat: 0
+            },
+            instagramFollowed: false
+        }
     }
 
     // Get usage stats for display

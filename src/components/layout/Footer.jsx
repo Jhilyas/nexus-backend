@@ -19,7 +19,7 @@ const translations = {
         privacy: 'Confidentialité',
         terms: 'Conditions',
         rights: 'Tous droits réservés.',
-        madeWith: 'Créé par Imane Taouss Bdaoui',
+        madeWith: 'Créé par Imane Taouss Badaoui',
         inMorocco: 'au Maroc'
     },
     ar: {
@@ -61,7 +61,7 @@ const translations = {
         privacy: 'Privacy',
         terms: 'Terms',
         rights: 'All rights reserved.',
-        madeWith: 'Created by Imane Taouss Bdaoui',
+        madeWith: 'Created by Imane Taouss Badaoui',
         inMorocco: 'in Morocco'
     }
 }

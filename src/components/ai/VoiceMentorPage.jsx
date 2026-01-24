@@ -15,7 +15,7 @@ import './VoiceMentorPage.css';
 const translations = {
     fr: {
         title: 'NEXUS AI',
-        subtitle: 'Assistant Vocal IA - Multilingue',
+        subtitle: 'Créé avec Imane Taouss Badaoui',
         listening: 'Je vous écoute...',
         processing: 'Je réfléchis...',
         speaking: 'Je réponds...',

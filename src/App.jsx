@@ -67,9 +67,16 @@ function App() {
     }
     window.addEventListener('openVoiceMentor', handleOpenVoiceMentor)
 
+    // Listen for reopen AI Chat after claiming bonus
+    const handleReopenAIChat = () => {
+      setShowMentor(true)
+    }
+    window.addEventListener('reopenAIChat', handleReopenAIChat)
+
     // Cleanup function
     return () => {
       window.removeEventListener('openVoiceMentor', handleOpenVoiceMentor)
+      window.removeEventListener('reopenAIChat', handleReopenAIChat)
     }
 
     // Exposer les contrôles audio globalement

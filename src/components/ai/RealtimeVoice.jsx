@@ -9,12 +9,12 @@ import './RealtimeVoice.css';
 // ═══════════════════════════════════════════════════════════════
 
 // Welcome message spoken when page opens
-const WELCOME_MESSAGE = "Bonjour, je suis créé par Imane Taouss Bdaoui, comment puis-je vous aider aujourd'hui ?";
+const WELCOME_MESSAGE = "Bonjour, je suis créé par Imane Taouss Badaoui, comment puis-je vous aider aujourd'hui ?";
 
 const translations = {
     fr: {
         title: 'NEXUS AI',
-        subtitle: 'Assistant Vocal Intelligent',
+        subtitle: 'Créé avec Imane Taouss Badaoui',
         listening: 'Je vous écoute...',
         processing: 'Je réfléchis...',
         speaking: 'Je réponds...',

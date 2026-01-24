@@ -125,12 +125,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--nexus-glass);
-    border: 1px solid var(--nexus-glass-border);
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.4);
     border-radius: var(--radius-md);
-    color: var(--nexus-text-secondary);
+    color: #ef4444;
     cursor: pointer;
     transition: all var(--transition-fast);
+    flex-shrink: 0;
 }
 
 .close-btn svg {
@@ -139,8 +140,10 @@
 }
 
 .close-btn:hover {
-    background: var(--nexus-glass-hover);
-    color: var(--nexus-text-primary);
+    background: rgba(239, 68, 68, 0.4);
+    border-color: #ef4444;
+    color: white;
+    transform: scale(1.05);
 }
 
 /* Voice Mode Button */
