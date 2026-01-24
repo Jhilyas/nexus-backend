@@ -13,6 +13,11 @@
   to = "/google9c5fe29fb722ce09.html"
   status = 200
 
+[[redirects]]
+  from = "/google8b6ceb3301d3f3a5.html"
+  to = "/google8b6ceb3301d3f3a5.html"
+  status = 200
+
 # SPA Fallback - All routes to index.html
 [[redirects]]
   from = "/*"
