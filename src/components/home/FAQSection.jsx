@@ -11,8 +11,8 @@ const translations = {
                 a: "NEXUS Morocco est une plateforme d'orientation intelligente qui complète les résultats de Tawjihi. Nous utilisons l'IA pour analyser votre profil et vous suggérer les meilleures écoles, universités et carrières au Maroc adaptées à vos compétences et ambitions."
             },
             {
-                q: "Est-ce que NEXUS remplace la plateforme Tawjihi ?",
-                a: "Non, NEXUS est un outil complémentaire indispensable. Alors que Tawjihi gère vos inscriptions administratives, NEXUS vous aide à **faire les bons choix** avant de postuler. Nous vous guidons vers les filières où vous avez le plus de chances de réussir."
+                q: "Quand utiliser NEXUS Morocco pour mon orientation ?",
+                a: "Utilisez NEXUS **avant** vos démarches administratives. Notre plateforme vous aide à clarifier votre projet personnel et choisir les meilleures filières. Ensuite, vous pourrez utiliser les portails nationaux comme Tawjihi pour vos inscriptions officielles en toute confiance."
             },
             {
                 q: "Comment fonctionne le test d'orientation IA ?",
@@ -37,8 +37,8 @@ const translations = {
                 a: "NEXUS Morocco هي منصة توجيه ذكية تكمل نتائج توجيهي. نستخدم الذكاء الاصطناعي لتحليل ملفك الشخصي واقتراح أفضل المدارس والجامعات والمسارات المهنية في المغرب التي تناسب مهاراتك وطموحاتك."
             },
             {
-                q: "هل تستبدل NEXUS منصة توجيهي (Tawjihi)؟",
-                a: "لا، NEXUS هي أداة تكميلية ضرورية. بينما تدير توجيهي تسجيلاتك الإدارية، تساعدك NEXUS على **اتخاذ القرارات الصحيحة** قبل التقديم. نرشدك نحو المسارات التي تملك فيها أكبر فرص النجاح."
+                q: "متى يجب استخدام NEXUS Morocco لتوجيهي؟",
+                a: "استخدم NEXUS **قبل** الإجراءات الإدارية. تساعدك منصتنا على توضيح مشروعك الشخصي واختيار أفضل المسارات. بعد ذلك، يمكنك استخدام البوابات الوطنية مثل توجيهي لتسجيلاتك الرسمية بكل ثقة."
             },
             {
                 q: "كيف يعمل اختبار التوجيه بالذكاء الاصطناعي؟",
