@@ -22,6 +22,7 @@ import WhyNexusSection from './components/home/WhyNexusSection'
 import HowItWorksSection from './components/home/HowItWorksSection'
 import AdvantagesSection from './components/home/AdvantagesSection'
 import CTASection from './components/home/CTASection'
+import FAQSection from './components/home/FAQSection'
 
 import Blog from './components/blog/Blog'
 import BlogPost from './components/blog/BlogPost'
@@ -185,6 +186,7 @@ function App() {
             <OrientationEngine language={language} />
             <TimelineSimulator language={language} />
             <SchoolsExplorer language={language} />
+            <FAQSection language={language} />
             <PricingSection language={language} user={user} onLoginRequired={handleLogin} />
             <CTASection onLogin={handleLogin} language={language} />
           </>

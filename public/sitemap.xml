@@ -12,12 +12,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://nexus-morocco.com/blog/alternative-tawajih</loc>
-    <lastmod>2024-05-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+
   <url>
     <loc>https://nexus-morocco.com/blog/meilleures-ecoles-maroc</loc>
     <lastmod>2024-05-20</lastmod>
