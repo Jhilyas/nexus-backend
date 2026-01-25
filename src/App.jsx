@@ -18,8 +18,17 @@ import Footer from './components/layout/Footer'
 import CosmicBackground from './components/effects/CosmicBackground'
 import SplashScreen from './components/splash/SplashScreen'
 
+import WhyNexusSection from './components/home/WhyNexusSection'
+import HowItWorksSection from './components/home/HowItWorksSection'
+import AdvantagesSection from './components/home/AdvantagesSection'
+import CTASection from './components/home/CTASection'
+
+import Blog from './components/blog/Blog'
+import BlogPost from './components/blog/BlogPost'
+
 function App() {
   const [currentPage, setCurrentPage] = useState('home')
+  const [currentBlogPostId, setCurrentBlogPostId] = useState(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [user, setUser] = useState(null)
   const [showMentor, setShowMentor] = useState(false)
@@ -79,39 +88,7 @@ function App() {
       window.removeEventListener('reopenAIChat', handleReopenAIChat)
     }
 
-    // Exposer les contrôles audio globalement
-    window.nexusMusicControls = {
-      togglePlay: () => {
-        if (audioRef.current) {
-          if (audioRef.current.paused) {
-            audioRef.current.play()
-            setIsPlaying(true)
-          } else {
-            audioRef.current.pause()
-            setIsPlaying(false)
-          }
-        }
-      },
-      toggleMute: () => {
-        if (audioRef.current) {
-          audioRef.current.muted = !audioRef.current.muted
-          setIsMuted(!isMuted)
-        }
-      },
-      switchTrack: () => {
-        const nextTrack = (currentTrack + 1) % musicTracks.length
-        setCurrentTrack(nextTrack)
-        if (audioRef.current) {
-          const wasPlaying = !audioRef.current.paused
-          audioRef.current.src = musicTracks[nextTrack].src
-          audioRef.current.load()
-          if (wasPlaying) {
-            audioRef.current.play().catch(err => console.log('Play error:', err))
-          }
-        }
-      },
-      getState: () => ({ isPlaying, isMuted, currentTrack, trackName: musicTracks[currentTrack].name })
-    }
+    // window.nexusMusicControls removed in favor of direct props passing
   }, [isPlaying, isMuted])
 
   const handleSplashEnter = () => {
@@ -174,6 +151,24 @@ function App() {
             isPage={true}
           />
         )
+      case 'blog':
+        return (
+          <Blog
+            language={language}
+            onPostClick={(id) => {
+              setCurrentBlogPostId(id)
+              setCurrentPage('blog-post')
+            }}
+          />
+        )
+      case 'blog-post':
+        return (
+          <BlogPost
+            postId={currentBlogPostId}
+            language={language}
+            onBack={() => setCurrentPage('blog')}
+          />
+        )
 
       default:
         return (
@@ -183,11 +178,15 @@ function App() {
               onLogin={handleLogin}
               language={language}
             />
+            <WhyNexusSection language={language} />
             <FeaturesSection language={language} />
+            <HowItWorksSection language={language} />
+            <AdvantagesSection language={language} />
             <OrientationEngine language={language} />
             <TimelineSimulator language={language} />
             <SchoolsExplorer language={language} />
             <PricingSection language={language} user={user} onLoginRequired={handleLogin} />
+            <CTASection onLogin={handleLogin} language={language} />
           </>
         )
     }
@@ -220,6 +219,39 @@ function App() {
             language={language}
             setLanguage={setLanguage}
             user={user}
+            // Audio props
+            isPlaying={isPlaying}
+            isMuted={isMuted}
+            currentTrackName={musicTracks[currentTrack].name}
+            onTogglePlay={() => {
+              if (audioRef.current) {
+                if (isPlaying) {
+                  audioRef.current.pause()
+                  setIsPlaying(false)
+                } else {
+                  audioRef.current.play().catch(e => console.error("Play failed", e))
+                  setIsPlaying(true)
+                }
+              }
+            }}
+            onToggleMute={() => {
+              if (audioRef.current) {
+                audioRef.current.muted = !isMuted
+                setIsMuted(!isMuted)
+              }
+            }}
+            onSwitchTrack={() => {
+              const nextTrack = (currentTrack + 1) % musicTracks.length
+              setCurrentTrack(nextTrack)
+              // The effect or ref logic will handle the actual source change/playing
+              // We need to ensure it plays if it was already playing
+              setTimeout(() => {
+                if (audioRef.current) {
+                  audioRef.current.src = musicTracks[nextTrack].src
+                  if (isPlaying) audioRef.current.play().catch(e => console.error(e))
+                }
+              }, 0)
+            }}
           />
 
           <main>

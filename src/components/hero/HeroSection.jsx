@@ -3,48 +3,33 @@ import './HeroSection.css'
 
 const translations = {
     fr: {
-        tagline: 'Là où chaque avenir commence.',
-        title1: 'Découvrez votre',
-        title2: 'destinée',
-        title3: 'éducative',
-        description: "L'intelligence artificielle qui comprend votre potentiel, prédit vos opportunités et guide votre parcours vers le succès.",
-        cta: 'Commencer mon voyage',
-        secondary: 'Explorer les parcours',
+        tagline: 'NEXUS Morocco – Votre plateforme d\'orientation intelligente',
+        title1: 'Construisez votre',
+        title2: 'futur académique',
+        title3: 'dès maintenant',
+        description: "Accompagne les étudiants marocains dans l’orientation post-bac, le choix d’écoles et universités, et la construction de leur avenir.",
+        cta: 'Commencer mon orientation',
+        secondary: 'Découvrir NEXUS',
         stats: {
             schools: 'Écoles',
             careers: 'Carrières',
             students: 'Étudiants',
-            success: 'Taux de réussite'
+            success: 'Satisfaction'
         }
     },
     ar: {
-        tagline: 'حيث يبدأ كل مستقبل.',
-        title1: 'اكتشف',
-        title2: 'مصيرك',
-        title3: 'التعليمي',
-        description: 'الذكاء الاصطناعي الذي يفهم إمكانياتك، يتنبأ بفرصك ويوجه مسارك نحو النجاح.',
-        cta: 'ابدأ رحلتي',
-        secondary: 'استكشاف المسارات',
+        tagline: 'NEXUS Morocco – منصة التوجيه الذكي',
+        title1: 'ابنِ مستقبلك',
+        title2: 'الأكاديمي',
+        title3: 'الآن',
+        description: 'منصة لمساعدة الطلاب المغاربة على اختيار المسار الدراسي والجامعي المناسب لمواهبهم وطموحاتهم.',
+        cta: 'ابدأ التوجيه الآن',
+        secondary: 'اكتشف NEXUS',
         stats: {
             schools: 'مدرسة',
             careers: 'مهنة',
             students: 'طالب',
-            success: 'نسبة النجاح'
-        }
-    },
-    en: {
-        tagline: 'Where every future begins.',
-        title1: 'Discover your',
-        title2: 'educational',
-        title3: 'destiny',
-        description: 'AI that understands your potential, predicts your opportunities, and guides your path to success.',
-        cta: 'Start my journey',
-        secondary: 'Explore paths',
-        stats: {
-            schools: 'Schools',
-            careers: 'Careers',
-            students: 'Students',
-            success: 'Success rate'
+            success: 'رضا المستفيدين'
         }
     }
 }

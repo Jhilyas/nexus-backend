@@ -2,41 +2,12 @@ import { useState, useEffect } from 'react'
 import './Navbar.css'
 
 // Composant pour les contrôles audio dans la navbar
-const MusicControls = () => {
-    const [isPlaying, setIsPlaying] = useState(true)
-    const [isMuted, setIsMuted] = useState(false)
-    const [trackName, setTrackName] = useState('Ambient')
-
-    const togglePlay = () => {
-        if (window.nexusMusicControls) {
-            window.nexusMusicControls.togglePlay()
-            setIsPlaying(!isPlaying)
-        }
-    }
-
-    const toggleMute = () => {
-        if (window.nexusMusicControls) {
-            window.nexusMusicControls.toggleMute()
-            setIsMuted(!isMuted)
-        }
-    }
-
-    const switchTrack = () => {
-        if (window.nexusMusicControls) {
-            window.nexusMusicControls.switchTrack()
-            // Mettre à jour le nom de la piste après le switch
-            setTimeout(() => {
-                const state = window.nexusMusicControls.getState()
-                if (state) setTrackName(state.trackName)
-            }, 100)
-        }
-    }
-
+const MusicControls = ({ isPlaying, isMuted, trackName, onTogglePlay, onToggleMute, onSwitchTrack }) => {
     return (
         <div className="navbar-music-controls">
             <button
                 className="music-control-btn"
-                onClick={togglePlay}
+                onClick={onTogglePlay}
                 title={isPlaying ? 'Pause' : 'Play'}
             >
                 {isPlaying ? (
@@ -51,7 +22,7 @@ const MusicControls = () => {
             </button>
             <button
                 className="music-control-btn"
-                onClick={toggleMute}
+                onClick={onToggleMute}
                 title={isMuted ? 'Unmute' : 'Mute'}
             >
                 {isMuted ? (
@@ -66,7 +37,7 @@ const MusicControls = () => {
             </button>
             <button
                 className="music-control-btn music-switch-btn"
-                onClick={switchTrack}
+                onClick={onSwitchTrack}
                 title={`Changer la musique (${trackName})`}
             >
                 <svg viewBox="0 0 24 24" fill="currentColor">
@@ -120,7 +91,14 @@ const Navbar = ({
     onLogin,
     onLogout,
     language,
-    setLanguage
+    setLanguage,
+    // Audio props
+    isPlaying,
+    isMuted,
+    currentTrackName,
+    onTogglePlay,
+    onToggleMute,
+    onSwitchTrack
 }) => {
     const [scrolled, setScrolled] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -196,6 +174,12 @@ const Navbar = ({
                     >
                         {t.pricing}
                     </button>
+                    <button
+                        className={`nav-link ${currentPage === 'blog' ? 'active' : ''}`}
+                        onClick={() => { setCurrentPage('blog'); setMobileMenuOpen(false); }}
+                    >
+                        📝 {language === 'fr' ? 'Blog' : 'ملف'}
+                    </button>
                 </div>
 
                 {/* Right Section */}
@@ -223,14 +207,28 @@ const Navbar = ({
                             <button className="btn btn-ghost btn-sm" onClick={onLogout}>
                                 {t.logout}
                             </button>
-                            <MusicControls />
+                            <MusicControls
+                                isPlaying={isPlaying}
+                                isMuted={isMuted}
+                                trackName={currentTrackName}
+                                onTogglePlay={onTogglePlay}
+                                onToggleMute={onToggleMute}
+                                onSwitchTrack={onSwitchTrack}
+                            />
                         </div>
                     ) : (
                         <div className="user-menu">
                             <button className="btn btn-primary btn-sm" onClick={onLogin}>
                                 {t.getStarted}
                             </button>
-                            <MusicControls />
+                            <MusicControls
+                                isPlaying={isPlaying}
+                                isMuted={isMuted}
+                                trackName={currentTrackName}
+                                onTogglePlay={onTogglePlay}
+                                onToggleMute={onToggleMute}
+                                onSwitchTrack={onSwitchTrack}
+                            />
                         </div>
                     )}
 
