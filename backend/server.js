@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import db, { dbHelpers } from './database.js';
-import { emailService } from './services/email.js';
 
 // Load environment variables
 dotenv.config();
@@ -116,9 +115,6 @@ app.post('/api/auth/register', async (req, res) => {
             token,
             user: { ...user, password: undefined }
         });
-
-        // Send welcome email (async - don't block response)
-        emailService.sendWelcomeEmail(email, name).catch(err => console.error('Failed to send welcome email:', err));
     } catch (error) {
         console.error('Register error:', error);
         res.status(500).json({ error: error.message });

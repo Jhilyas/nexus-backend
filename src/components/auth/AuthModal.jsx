@@ -140,11 +140,6 @@ const AuthModal = ({ isOpen, onClose, onSuccess, language = 'fr' }) => {
 
                 if (!user) throw new Error(t.error);
 
-                // Trigger Welcome Email (Edge Function)
-                await supabase.functions.invoke('send-welcome-email', {
-                    body: { email: formData.email, name: formData.name }
-                });
-
                 onSuccess(user);
                 onClose();
             } else {

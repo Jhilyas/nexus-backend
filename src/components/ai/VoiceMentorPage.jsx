@@ -15,7 +15,7 @@ import './VoiceMentorPage.css';
 const translations = {
     fr: {
         title: 'NEXUS AI',
-        subtitle: 'Créé avec Imane Taouss Badaoui',
+        subtitle: 'Assistant Intelligent',
         listening: 'Je vous écoute...',
         processing: 'Je réfléchis...',
         speaking: 'Je réponds...',
@@ -78,7 +78,7 @@ const VoiceMentorPage = ({ language = 'fr', onBack }) => {
         const sayHello = async () => {
             // Short delay to ensure voices are loaded
             setTimeout(async () => {
-                await voiceAI.speak("Bonjour, je suis créé par Imane Taouss Badaoui, comment puis-je vous aider ?", { voice: selectedVoice });
+                await voiceAI.speak("Bonjour, comment puis-je vous aider aujourd'hui ?", { voice: selectedVoice });
             }, 500);
         };
         sayHello();
