@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { auth, supabase } from '../../services/supabase' // Import Supabase
 import './AuthModal.css'
 
 const translations = {
@@ -129,23 +130,35 @@ const AuthModal = ({ isOpen, onClose, onSuccess, language = 'fr' }) => {
                 throw new Error('Passwords do not match')
             }
 
-            // Simulate API call (replace with real API)
-            await new Promise(resolve => setTimeout(resolve, 1500))
+            if (mode === 'register') {
+                // Real Supabase Signup
+                const { user, session } = await auth.signUp(
+                    formData.email,
+                    formData.password,
+                    formData.name
+                );
 
-            // Mock successful authentication
-            const user = {
-                id: Date.now().toString(),
-                email: formData.email,
-                name: formData.name || formData.email.split('@')[0],
-                bacYear: formData.bacYear,
-                bacType: formData.bacType,
-                bacScore: formData.bacScore,
-                subscription: 'free',
-                progress: 0
+                if (!user) throw new Error(t.error);
+
+                // Trigger Welcome Email (Edge Function)
+                await supabase.functions.invoke('send-welcome-email', {
+                    body: { email: formData.email, name: formData.name }
+                });
+
+                onSuccess(user);
+                onClose();
+            } else {
+                // Real Supabase Login
+                const { user, session } = await auth.signIn(
+                    formData.email,
+                    formData.password
+                );
+
+                if (!user) throw new Error(t.error);
+
+                onSuccess(user);
+                onClose();
             }
-
-            onSuccess(user)
-            onClose()
         } catch (err) {
             setError(err.message || t.error)
         } finally {
