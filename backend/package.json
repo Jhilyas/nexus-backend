@@ -29,6 +29,7 @@
     "groq-sdk": "^0.37.0",
     "jsonwebtoken": "^9.0.3",
     "node-fetch": "^3.3.2",
-    "openai": "^6.16.0"
+    "openai": "^6.16.0",
+    "resend": "^6.8.0"
   }
 }
