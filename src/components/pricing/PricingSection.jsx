@@ -4,7 +4,7 @@ import './PricingSection.css'
 
 const translations = {
     fr: {
-        badge: '💎 Offres Exclusives',
+        badge: '🎁 1 AN GRATUIT POUR TOUS!',
         title: 'Investissez dans',
         titleHighlight: 'votre avenir',
         description: 'Rejoignez +5,000 étudiants marocains qui ont transformé leur parcours avec NEXUS.',
@@ -20,7 +20,7 @@ const translations = {
         loginRequired: 'Connexion requise',
         success: '🎉 Félicitations!',
         guarantee: '✨ Garantie 30 jours satisfait ou remboursé',
-        limitedOffer: '🚀 Offre limitée - 50% sur le 1er mois',
+        limitedOffer: '🚀 Offre spéciale - Tous les abonnements GRATUITS pendant 1 an!',
         trustedBy: 'Approuvé par les meilleures écoles',
         plans: [
             {
@@ -156,7 +156,7 @@ const translations = {
         cancelAnytime: 'Annulez à tout moment'
     },
     en: {
-        badge: '💎 Exclusive Offers',
+        badge: '🎁 1 YEAR FREE FOR EVERYONE!',
         title: 'Invest in',
         titleHighlight: 'your future',
         description: 'Join +5,000 Moroccan students who transformed their path with NEXUS.',
@@ -172,7 +172,7 @@ const translations = {
         loginRequired: 'Login required',
         success: '🎉 Congratulations!',
         guarantee: '✨ 30-day money-back guarantee',
-        limitedOffer: '🚀 Limited offer - 50% off first month',
+        limitedOffer: '🚀 Special offer - All subscriptions FREE for 1 year!',
         trustedBy: 'Trusted by top schools',
         plans: [
             {
@@ -308,7 +308,7 @@ const translations = {
         cancelAnytime: 'Cancel anytime'
     },
     ar: {
-        badge: '💎 عروض حصرية',
+        badge: '🎁 سنة واحدة مجاناً للجميع!',
         title: 'استثمر في',
         titleHighlight: 'مستقبلك',
         description: 'انضم إلى أكثر من 5000 طالب مغربي غيروا مسارهم مع NEXUS.',
@@ -324,7 +324,7 @@ const translations = {
         loginRequired: 'تسجيل الدخول مطلوب',
         success: '🎉 مبروك!',
         guarantee: '✨ ضمان استعادة الأموال لمدة 30 يومًا',
-        limitedOffer: '🚀 عرض محدود - خصم 50% على الشهر الأول',
+        limitedOffer: '🚀 عرض خاص - جميع الاشتراكات مجانية لمدة سنة!',
         trustedBy: 'موثوق من أفضل المدارس',
         plans: [
             {
@@ -649,19 +649,16 @@ const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => 
         // Don't allow subscribing to current plan
         if (planId === currentPlan) return
 
-        // Free plan - check login
-        if (planId === 'free') {
-            const token = localStorage.getItem('nexus_token')
-            if (!token) {
-                onLoginRequired()
-                return
-            }
-            await processSubscription(planId)
+        // Check if user is logged in
+        const token = localStorage.getItem('nexus_token')
+        if (!token) {
+            onLoginRequired()
             return
         }
 
-        // Paid plans - show payment modal directly
-        setShowPaymentModal(planId)
+        // ALL PLANS ARE FREE FOR 1 YEAR - No payment required!
+        // Directly activate the plan without showing payment modal
+        await processSubscription(planId)
     }
 
     const processSubscription = async (planId, paymentId = null) => {
@@ -816,21 +813,19 @@ const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => 
                                 <p className="plan-tagline">{plan.description}</p>
                             </div>
 
-                            {/* Price */}
+                            {/* Price - ALL PLANS FREE FOR 1 YEAR */}
                             <div className="plan-price-v2">
                                 {plan.originalPrice && (
                                     <span className="original-price">{plan.originalPrice} MAD</span>
                                 )}
+                                {plan.price > 0 && (
+                                    <span className="original-price" style={{ textDecoration: 'line-through', color: '#ef4444' }}>{plan.price} MAD</span>
+                                )}
                                 <div className="price-main">
-                                    <span className="price-value">{getPrice(plan)}</span>
+                                    <span className="price-value" style={{ color: '#10b981' }}>0</span>
                                     <div className="price-details">
                                         <span className="price-currency">MAD</span>
-                                        {!plan.isLifetime && (
-                                            <span className="price-period">{billingCycle === 'monthly' ? t.perMonth : t.perYear}</span>
-                                        )}
-                                        {plan.isLifetime && (
-                                            <span className="price-period">une seule fois</span>
-                                        )}
+                                        <span className="price-period" style={{ color: '#10b981', fontWeight: 'bold' }}>1 AN GRATUIT!</span>
                                     </div>
                                 </div>
                             </div>

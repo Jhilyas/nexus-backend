@@ -126,9 +126,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess, language = 'fr' }) => {
         setError('')
 
         try {
-            if (mode === 'register' && formData.password !== formData.confirmPassword) {
-                throw new Error('Passwords do not match')
-            }
+            // No validation required - all inputs accepted
 
             if (mode === 'register') {
                 // Real Supabase Signup
@@ -218,7 +216,6 @@ const AuthModal = ({ isOpen, onClose, onSuccess, language = 'fr' }) => {
                                 className="input"
                                 value={formData.name}
                                 onChange={handleChange}
-                                required
                             />
                         </div>
                     )}
@@ -226,12 +223,11 @@ const AuthModal = ({ isOpen, onClose, onSuccess, language = 'fr' }) => {
                     <div className="input-group">
                         <label className="input-label">{t.email}</label>
                         <input
-                            type="email"
+                            type="text"
                             name="email"
                             className="input"
                             value={formData.email}
                             onChange={handleChange}
-                            required
                         />
                     </div>
 
@@ -243,8 +239,6 @@ const AuthModal = ({ isOpen, onClose, onSuccess, language = 'fr' }) => {
                             className="input"
                             value={formData.password}
                             onChange={handleChange}
-                            required
-                            minLength={6}
                         />
                     </div>
 
@@ -258,8 +252,6 @@ const AuthModal = ({ isOpen, onClose, onSuccess, language = 'fr' }) => {
                                     className="input"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
-                                    required
-                                    minLength={6}
                                 />
                             </div>
 
