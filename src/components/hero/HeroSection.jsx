@@ -6,8 +6,9 @@ const translations = {
         tagline: 'NEXUS Morocco – Votre plateforme d\'orientation intelligente',
         title1: 'Construisez votre',
         title2: 'futur académique',
+        titleHighlight: 'Avenir',
         title3: 'dès maintenant',
-        description: "Accompagne les étudiants marocains dans l’orientation post-bac, le choix d’écoles et universités, et la construction de leur avenir.",
+        description: "Accompagne les étudiants marocains dans l'orientation post-bac, le choix d'écoles et universités, et la construction de leur avenir.",
         cta: 'Commencer mon orientation',
         secondary: 'Découvrir NEXUS',
         stats: {
@@ -19,8 +20,9 @@ const translations = {
     },
     ar: {
         tagline: 'NEXUS Morocco – منصة التوجيه الذكي',
-        title1: 'ابنِ مستقبلك',
+        title1: 'ابنِ',
         title2: 'الأكاديمي',
+        titleHighlight: 'مستقبلك',
         title3: 'الآن',
         description: 'منصة لمساعدة الطلاب المغاربة على اختيار المسار الدراسي والجامعي المناسب لمواهبهم وطموحاتهم.',
         cta: 'ابدأ التوجيه الآن',
@@ -31,13 +33,29 @@ const translations = {
             students: 'طالب',
             success: 'رضا المستفيدين'
         }
+    },
+    en: {
+        tagline: 'NEXUS Morocco – Your intelligent guidance platform',
+        title1: 'Build your',
+        title2: 'academic future',
+        titleHighlight: 'future',
+        title3: 'now',
+        description: 'Helping Moroccan students with post-baccalaureate guidance, choosing schools and universities, and building their future.',
+        cta: 'Start my orientation',
+        secondary: 'Discover NEXUS',
+        stats: {
+            schools: 'Schools',
+            careers: 'Careers',
+            students: 'Students',
+            success: 'Satisfaction'
+        }
     }
 }
 
 const HeroSection = ({ onExplore, onLogin, language = 'fr' }) => {
     const [isVisible, setIsVisible] = useState(false)
     const [currentWord, setCurrentWord] = useState(0)
-    const t = translations[language]
+    const t = translations[language] || translations['fr']
     const isRTL = language === 'ar'
 
     const words = [t.title2, 'المستقبل', 'future', 'parcours', 'مسار', 'path']
@@ -81,7 +99,7 @@ const HeroSection = ({ onExplore, onLogin, language = 'fr' }) => {
                             {t.title1}
                         </span>
                         <span className="title-line title-gradient animate-fade-in-up delay-200" style={{ textAlign: 'center', display: 'block' }}>
-                            Plateforme
+                            {t.titleHighlight}
                         </span>
                         <span className="title-line animate-fade-in-up delay-300">
                             {t.title3}
