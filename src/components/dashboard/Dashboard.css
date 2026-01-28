@@ -596,3 +596,47 @@
     margin-left: 0;
     margin-right: 1rem;
 }
+
+/* New Plan Badge Colors */
+.plan-badge.green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.plan-badge.blue {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+    border: 1px solid rgba(102, 126, 234, 0.4);
+}
+
+.plan-badge.purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+}
+
+.plan-badge.gold {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    animation: gold-pulse 2s ease-in-out infinite;
+}
+
+@keyframes gold-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(245, 158, 11, 0.8);
+    }
+}
+
+.plan-label {
+    -webkit-text-fill-color: white;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+}

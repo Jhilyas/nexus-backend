@@ -477,7 +477,7 @@ const PAYPAL_PLAN_IDS = {
     }
 }
 
-const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => { } }) => {
+const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => { }, onPlanSelected = null }) => {
     const [billingCycle, setBillingCycle] = useState('monthly')
     const [currentPlan, setCurrentPlan] = useState('free')
     const [upgrading, setUpgrading] = useState(null)
@@ -487,6 +487,14 @@ const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => 
     const [paypalLoaded, setPaypalLoaded] = useState(false)
     const [paypalError, setPaypalError] = useState(false)
     const [processing, setProcessing] = useState(false)
+
+    // New states for name modal and congratulations
+    const [showNameModal, setShowNameModal] = useState(false)
+    const [showCongrats, setShowCongrats] = useState(false)
+    const [selectedPlan, setSelectedPlan] = useState(null)
+    const [userName, setUserName] = useState('')
+    const [nameError, setNameError] = useState('')
+
     const t = translations[language] || translations.fr
     const isRTL = language === 'ar'
 
@@ -649,16 +657,82 @@ const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => 
         // Don't allow subscribing to current plan
         if (planId === currentPlan) return
 
-        // Check if user is logged in
-        const token = localStorage.getItem('nexus_token')
-        if (!token) {
-            onLoginRequired()
+        // Check if user has a name set (from localStorage)
+        const savedUser = localStorage.getItem('nexus_user')
+        let hasName = false
+
+        if (savedUser) {
+            try {
+                const parsedUser = JSON.parse(savedUser)
+                hasName = parsedUser.name && parsedUser.name.trim() !== ''
+            } catch {
+                hasName = false
+            }
+        }
+
+        // If no name, show name modal first
+        if (!hasName) {
+            setSelectedPlan(planId)
+            setShowNameModal(true)
             return
         }
 
         // ALL PLANS ARE FREE FOR 1 YEAR - No payment required!
-        // Directly activate the plan without showing payment modal
-        await processSubscription(planId)
+        // Directly activate the plan and show congratulations
+        activatePlanWithCongrats(planId)
+    }
+
+    const handleNameSubmit = () => {
+        if (!userName.trim()) {
+            setNameError(language === 'ar' ? 'الرجاء إدخال اسمك' : language === 'en' ? 'Please enter your name' : 'Veuillez entrer votre nom')
+            return
+        }
+
+        // Save user to localStorage
+        const userData = {
+            id: 'user_' + Date.now(),
+            name: userName.trim(),
+            email: userName.trim().toLowerCase().replace(/\s+/g, '.') + '@nexus.ma',
+            plan: selectedPlan,
+            createdAt: new Date().toISOString()
+        }
+
+        localStorage.setItem('nexus_user', JSON.stringify(userData))
+        localStorage.setItem('nexus_token', 'token_' + Date.now())
+
+        setShowNameModal(false)
+        setNameError('')
+
+        // Now show congratulations
+        activatePlanWithCongrats(selectedPlan)
+    }
+
+    const activatePlanWithCongrats = (planId) => {
+        // Update the user's plan in localStorage
+        const savedUser = localStorage.getItem('nexus_user')
+        if (savedUser) {
+            try {
+                const parsedUser = JSON.parse(savedUser)
+                parsedUser.plan = planId
+                localStorage.setItem('nexus_user', JSON.stringify(parsedUser))
+            } catch (e) {
+                console.error('Error updating plan:', e)
+            }
+        }
+
+        setSelectedPlan(planId)
+        setCurrentPlan(planId)
+        setShowCongrats(true)
+    }
+
+    const handleCongratsClose = () => {
+        setShowCongrats(false)
+        // Redirect to dashboard
+        if (onPlanSelected) {
+            onPlanSelected(selectedPlan)
+        } else {
+            window.location.reload()
+        }
     }
 
     const processSubscription = async (planId, paymentId = null) => {
@@ -999,6 +1073,94 @@ const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => 
                         <div className="modal-footer">
                             <p className="modal-security">🔒 Paiement sécurisé • Données cryptées SSL 256-bit</p>
                             <p className="modal-cancel">{t.cancelAnytime || 'Annulez à tout moment'}</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Name Modal */}
+            {showNameModal && (
+                <div className="payment-modal-overlay" onClick={() => setShowNameModal(false)}>
+                    <div className="payment-modal name-modal" onClick={e => e.stopPropagation()}>
+                        <button className="modal-close" onClick={() => setShowNameModal(false)}>×</button>
+
+                        <div className="modal-header">
+                            <span className="modal-icon">✨</span>
+                            <h3>{language === 'ar' ? 'أدخل اسمك' : language === 'en' ? 'Enter your name' : 'Entrez votre nom'}</h3>
+                            <p className="modal-subtitle">{language === 'ar' ? 'لتفعيل حسابك' : language === 'en' ? 'To activate your account' : 'Pour activer votre compte'}</p>
+                        </div>
+
+                        {nameError && (
+                            <div className="name-error">⚠️ {nameError}</div>
+                        )}
+
+                        <div className="name-input-container">
+                            <input
+                                type="text"
+                                className="name-input-field"
+                                placeholder={language === 'ar' ? 'اسمك الكامل' : language === 'en' ? 'Your full name' : 'Votre nom complet'}
+                                value={userName}
+                                onChange={(e) => {
+                                    setUserName(e.target.value)
+                                    setNameError('')
+                                }}
+                                autoFocus
+                            />
+                        </div>
+
+                        <button className="confirm-btn" onClick={handleNameSubmit}>
+                            🚀 {language === 'ar' ? 'تأكيد' : language === 'en' ? 'Continue' : 'Continuer'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Congratulations Modal */}
+            {showCongrats && (
+                <div className="payment-modal-overlay congrats-overlay">
+                    <div className="payment-modal congrats-modal" onClick={e => e.stopPropagation()}>
+                        {/* Confetti Animation */}
+                        <div className="confetti-container">
+                            {[...Array(50)].map((_, i) => (
+                                <div key={i} className="confetti" style={{
+                                    left: `${Math.random() * 100}%`,
+                                    animationDelay: `${Math.random() * 2}s`,
+                                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe', '#43e97b', '#fa709a'][Math.floor(Math.random() * 8)]
+                                }} />
+                            ))}
+                        </div>
+
+                        <div className="congrats-content">
+                            <div className="congrats-badge">
+                                {selectedPlan === 'pro' && '⚡'}
+                                {selectedPlan === 'elite' && '👑'}
+                                {(selectedPlan === 'godmode' || selectedPlan === 'lifetime') && '🔮'}
+                                {selectedPlan === 'free' && '🌱'}
+                            </div>
+
+                            <h2 className="congrats-title">🎉 {language === 'ar' ? 'مبروك!' : language === 'en' ? 'Congratulations!' : 'Félicitations!'}</h2>
+
+                            <p className="congrats-message">
+                                {language === 'ar'
+                                    ? `لقد فتحت سنة واحدة من ${selectedPlan === 'pro' ? 'Pro' : selectedPlan === 'elite' ? 'Elite' : 'Lifetime'} مجاناً!`
+                                    : language === 'en'
+                                        ? `You've unlocked 1 year of ${selectedPlan === 'pro' ? 'Pro' : selectedPlan === 'elite' ? 'Elite' : 'Lifetime'} for FREE!`
+                                        : `Vous avez débloqué 1 an de ${selectedPlan === 'pro' ? 'Pro' : selectedPlan === 'elite' ? 'Elite' : 'Lifetime'} GRATUIT!`
+                                }
+                            </p>
+
+                            <div className="congrats-plan-info">
+                                <span className="plan-icon-large">
+                                    {selectedPlan === 'pro' && '⚡'}
+                                    {selectedPlan === 'elite' && '👑'}
+                                    {(selectedPlan === 'godmode' || selectedPlan === 'lifetime') && '🔮'}
+                                </span>
+                                <span className="plan-name-large">NEXUS {selectedPlan === 'godmode' ? 'Lifetime' : selectedPlan?.charAt(0).toUpperCase() + selectedPlan?.slice(1)}</span>
+                            </div>
+
+                            <button className="congrats-btn" onClick={handleCongratsClose}>
+                                ✨ {language === 'ar' ? 'الذهاب إلى لوحة التحكم' : language === 'en' ? 'Go to Dashboard' : 'Aller au Dashboard'}
+                            </button>
                         </div>
                     </div>
                 </div>

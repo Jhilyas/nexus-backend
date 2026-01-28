@@ -187,7 +187,25 @@ function App() {
             <TimelineSimulator language={language} />
             <SchoolsExplorer language={language} />
             <FAQSection language={language} />
-            <PricingSection language={language} user={user} onLoginRequired={handleLogin} />
+            <PricingSection
+              language={language}
+              user={user}
+              onLoginRequired={handleLogin}
+              onPlanSelected={(planId) => {
+                // Reload user from localStorage and redirect to dashboard
+                const savedUser = localStorage.getItem('nexus_user')
+                if (savedUser) {
+                  try {
+                    const parsedUser = JSON.parse(savedUser)
+                    setUser(parsedUser)
+                    setIsLoggedIn(true)
+                    setCurrentPage('dashboard')
+                  } catch (e) {
+                    console.error('Error parsing user:', e)
+                  }
+                }
+              }}
+            />
             <CTASection onLogin={handleLogin} language={language} />
           </>
         )

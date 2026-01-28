@@ -225,6 +225,99 @@
     color: var(--nexus-aurora-3);
 }
 
+/* New Header Styles */
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.auth-title {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--nexus-text-primary);
+    margin-bottom: var(--space-sm);
+}
+
+.auth-subtitle {
+    font-size: 1rem;
+    color: var(--nexus-text-secondary);
+}
+
+/* Name Input - Larger and Centered */
+.name-input {
+    font-size: 1.25rem;
+    text-align: center;
+    padding: var(--space-lg) var(--space-xl);
+    border-radius: var(--radius-lg);
+    background: var(--nexus-glass);
+    border: 2px solid transparent;
+    transition: all var(--transition-base);
+}
+
+.name-input:focus {
+    border-color: var(--nexus-aurora-1);
+    box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+}
+
+.name-input::placeholder {
+    color: var(--nexus-text-tertiary);
+}
+
+/* Submit Button with Emoji */
+.auth-submit .btn-emoji {
+    margin-right: var(--space-sm);
+    font-size: 1.25rem;
+}
+
+.rtl .auth-submit .btn-emoji {
+    margin-right: 0;
+    margin-left: var(--space-sm);
+}
+
+/* Decorative Stars */
+.auth-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.auth-star {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.auth-star-1 {
+    top: 15%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.auth-star-2 {
+    top: 20%;
+    right: 15%;
+    animation-delay: 0.5s;
+}
+
+.auth-star-3 {
+    bottom: 25%;
+    left: 15%;
+    animation-delay: 1s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.6;
+    }
+    50% {
+        transform: translateY(-10px) rotate(10deg);
+        opacity: 1;
+    }
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .auth-modal {
@@ -235,5 +328,13 @@
 
     .input-row {
         grid-template-columns: 1fr;
+    }
+    
+    .name-input {
+        font-size: 1.1rem;
+    }
+    
+    .auth-title {
+        font-size: 1.5rem;
     }
 }

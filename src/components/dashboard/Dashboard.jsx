@@ -53,9 +53,39 @@ const translations = {
     }
 }
 
-const Dashboard = ({ onToggleMentor, language = 'fr', setCurrentPage }) => {
+const Dashboard = ({ onToggleMentor, user = null, language = 'fr', setCurrentPage }) => {
     const [progress, setProgress] = useState(0)
-    const [planDetails, setPlanDetails] = useState(usageLimitService.getPlanDetails())
+
+    // Get user plan from user object or localStorage
+    const getUserPlan = () => {
+        if (user && user.plan) return user.plan
+        const savedUser = localStorage.getItem('nexus_user')
+        if (savedUser) {
+            try {
+                return JSON.parse(savedUser).plan || 'free'
+            } catch {
+                return 'free'
+            }
+        }
+        return 'free'
+    }
+
+    const userPlan = getUserPlan()
+
+    // Plan badge configurations
+    const planBadges = {
+        free: { badge: '🌱', label: 'Découverte', color: 'green' },
+        pro: { badge: '⚡', label: 'Pro', color: 'blue' },
+        elite: { badge: '👑', label: 'Elite', color: 'purple' },
+        godmode: { badge: '🔮', label: 'Lifetime', color: 'gold' },
+        lifetime: { badge: '🔮', label: 'Lifetime', color: 'gold' }
+    }
+
+    const planDetails = planBadges[userPlan] || planBadges.free
+
+    // Get username
+    const userName = user?.name || 'Utilisateur'
+
     const t = translations[language]
     const isRTL = language === 'ar'
 
@@ -120,7 +150,7 @@ const Dashboard = ({ onToggleMentor, language = 'fr', setCurrentPage }) => {
             <div className="dashboard-header">
                 <div className="dashboard-greeting">
                     <h1 className="greeting-text">
-                        {t.welcome} <span className="user-name">Ilyas</span>
+                        {t.welcome} <span className="user-name">{userName}</span>
                         <span className={`plan-badge ${planDetails.color}`} title={planDetails.label}>
                             {planDetails.badge} <span className="plan-label">{planDetails.label}</span>
                         </span>
