@@ -4,11 +4,13 @@ export const blogPosts = [
         id: 'seuils-ensa-encg-medecine-2026',
         title: {
             fr: 'Seuils d\'accès ENSA, ENCG et Médecine 2026 : Prévisions et Analyse',
-            ar: 'عتبات الانتقاء ENSA، ENCG والطب 2026: توقعات وتحليل'
+            ar: 'عتبات الانتقاء ENSA، ENCG والطب 2026: توقعات وتحليل',
+            en: 'ENSA, ENCG and Medicine 2026 Access Thresholds: Predictions and Analysis'
         },
         excerpt: {
             fr: 'Tout ce qu\'il faut savoir sur les notes de seuil pour les grandes écoles marocaines. Ne soyez pas pris au dépourvu.',
-            ar: 'كل ما تحتاج معرفته حول عتبات الانتقاء للمدارس العليا المغربية. كن مستعداً.'
+            ar: 'كل ما تحتاج معرفته حول عتبات الانتقاء للمدارس العليا المغربية. كن مستعداً.',
+            en: 'Everything you need to know about threshold scores for major Moroccan schools. Don\'t be caught off guard.'
         },
         category: 'Concours',
         date: '2026-05-15',
@@ -48,6 +50,25 @@ export const blogPosts = [
                 <div class="glass-alert">
                      ⚠️ <strong>تنبيه:</strong> هذه الأرقام تقديرية. استخدم <a href="#" onclick="document.querySelector('.nav-link[href=\'/explore\']').click()">محاكي الحظوظ</a> الخاص بنا للحصول على تحليل دقيق.
                 </div>
+            `,
+            en: `
+                <h2>Thresholds: How do they work?</h2>
+                <p>Every year, schools like ENSA (National Schools of Applied Sciences), ENCG (National Schools of Commerce and Management) and Medical Faculties set a "threshold score". This is the Bac average (often 75% National + 25% Regional) required to take the entrance exam.</p>
+
+                <h2>Predictions for 2026</h2>
+                <p>Based on history and current trends, here are the estimates for 2026:</p>
+                <ul>
+                    <li><strong>Medicine & Pharmacy:</strong> Around 12.00 (New reform possible)</li>
+                    <li><strong>ENSA:</strong> Between 12.50 and 13.00 depending on cities</li>
+                    <li><strong>ENCG:</strong> Generally around 13.50</li>
+                </ul>
+                
+                <div class="glass-alert">
+                    ⚠️ <strong>Note:</strong> These figures are estimates. Use our <a href="#" onclick="document.querySelector('.nav-link[href=\'/explore\']').click()">Chance Simulator</a> for a precise analysis.
+                </div>
+
+                <h2>How to prepare if you're on the edge?</h2>
+                <p>If your average is close to the threshold, don't panic. Focus on preparing for the written exam. That's often where everything is decided.</p>
             `
         }
     },
@@ -55,11 +76,13 @@ export const blogPosts = [
         id: 'reussir-concours-medecine-maroc',
         title: {
             fr: 'Comment réussir le concours de Médecine au Maroc ? (Guide Complet)',
-            ar: 'كيف تنجح في مباراة الطب في المغرب؟ (دليل شامل)'
+            ar: 'كيف تنجح في مباراة الطب في المغرب؟ (دليل شامل)',
+            en: 'How to pass the Medicine exam in Morocco? (Complete Guide)'
         },
         excerpt: {
             fr: 'Stratégies, astuces et ressources pour décrocher votre place en Faculté de Médecine et de Pharmacie.',
-            ar: 'استراتيجيات، نصائح وموارد لضمان مقعدك في كلية الطب والصيدلة.'
+            ar: 'استراتيجيات، نصائح وموارد لضمان مقعدك في كلية الطب والصيدلة.',
+            en: 'Strategies, tips and resources to secure your place in the Faculty of Medicine and Pharmacy.'
         },
         category: 'Médecine',
         date: '2026-04-10',
@@ -98,6 +121,23 @@ export const blogPosts = [
 
                 <h2>مساهمة الذكاء الاصطناعي NEXUS</h2>
                 <p>يمكن لمرشدنا الذكي "SAGE" إنشاء اختبارات تدريبية مخصصة لك. <a href="#" onclick="document.querySelector('.vision-pro-btn.chat').click()">اطلب من SAGE</a> اختبارك في الكيمياء العضوية الآن!</p>
+            `,
+            en: `
+                <h2>Exam selectivity</h2>
+                <p>The medicine exam is one of the most selective in Morocco. But with the right method, it's achievable.</p>
+
+                <h2>The tests</h2>
+                <p>The exam generally covers 4 subjects:</p>
+                <ul>
+                    <li>Natural Sciences (SVT)</li>
+                    <li>Physics</li>
+                    <li>Chemistry</li>
+                    <li>Mathematics</li>
+                </ul>
+                <p>The secret? Speed. You have very little time per question (MCQ).</p>
+
+                <h2>NEXUS AI contribution</h2>
+                <p>Our AI mentor "SAGE" can generate personalized practice quizzes for you. <a href="#" onclick="document.querySelector('.vision-pro-btn.chat').click()">Ask SAGE</a> to test you on Organic Chemistry right now!</p>
             `
         }
     },
@@ -105,11 +145,13 @@ export const blogPosts = [
         id: 'meilleures-ecoles-maroc',
         title: {
             fr: 'Les meilleures écoles d\'ingénieurs et de commerce au Maroc',
-            ar: 'أفضل مدارس المهندسين والتجارة في المغرب'
+            ar: 'أفضل مدارس المهندسين والتجارة في المغرب',
+            en: 'The best engineering and business schools in Morocco'
         },
         excerpt: {
             fr: 'Comparatif 2026 : UM6P, UIR, Al Akhawayn, ENCG, ENSA... Quelle école choisir ?',
-            ar: 'مقارنة 2026: UM6P، UIR، الأخوين، ENCG، ENSA... أي مدرسة تختار؟'
+            ar: 'مقارنة 2026: UM6P، UIR، الأخوين، ENCG، ENSA... أي مدرسة تختار؟',
+            en: '2026 Comparison: UM6P, UIR, Al Akhawayn, ENCG, ENSA... Which school to choose?'
         },
         category: 'Comparatif',
         date: '2024-05-20',
@@ -131,6 +173,16 @@ export const blogPosts = [
                 
                 <h2>حالة المدارس شبه العمومية</h2>
                 <p>توفر UIR (الجامعة الدولية للرباط) و UM6P (جامعة محمد السادس متعددة التخصصات) منح استحقاق تجعل الوصول إليها ممكناً حتى للدخل المحدود.</p>
+            `,
+            en: `
+                <h2>Public vs Private</h2>
+                <p>The choice between public (Free, recognized, difficult exam) and private (Paid, modern resources, networks) depends on your project and your means.</p>
+                
+                <h2>The case of semi-public schools</h2>
+                <p>UIR (International University of Rabat) and UM6P (Mohammed VI Polytechnic University) offer excellence scholarships that make access possible even for modest incomes.</p>
+
+                <h2>Ranking and Reputation</h2>
+                <p>For recruiters, the school matters. But your skills matter more. That's why NEXUS emphasizes "Soft Skills".</p>
             `
         }
     },
@@ -138,11 +190,13 @@ export const blogPosts = [
         id: 'guide-tawjih',
         title: {
             fr: 'Orientation Post-Bac Intelligente : Le futur avec l\'IA',
-            ar: 'توجيه ما بعد البكالوريا الذكي: المستقبل مع الذكاء الاصطناعي'
+            ar: 'توجيه ما بعد البكالوريا الذكي: المستقبل مع الذكاء الاصطناعي',
+            en: 'Intelligent Post-Bac Orientation: The future with AI'
         },
         excerpt: {
             fr: 'Pourquoi les conseillers d\'orientation classiques sont dépassés par l\'IA.',
-            ar: 'لماذا يتفوق الذكاء الاصطناعي على مستشاري التوجيه التقليديين.'
+            ar: 'لماذا يتفوق الذكاء الاصطناعي على مستشاري التوجيه التقليديين.',
+            en: 'Why traditional guidance counselors are outpaced by AI.'
         },
         category: 'Technologie',
         date: '2024-06-01',
@@ -153,11 +207,18 @@ export const blogPosts = [
                 <p>Fini le temps où l'on choisissait une filière "au pif". Avec NEXUS, nous analysons votre profil psychologique, vos notes et vos passions pour trouver le match parfait.</p>
                 
                 <h2>Les métiers qui n'existent pas encore</h2>
-                <p>saviez-vous que 60% des métiers de 2030 n'existent pas encore ? Seule une IA connectée aux tendances mondiales peut vous y préparer.</p>
+                <p>Saviez-vous que 60% des métiers de 2030 n'existent pas encore ? Seule une IA connectée aux tendances mondiales peut vous y préparer.</p>
             `,
             ar: `
                 <h2>نهاية "توجيه" الصدفة</h2>
-                <p>انتهى وقت اختيار المسار "بالحظ". مع NEXUS، نقوم بتحليل ملفك النفسي، وطك وشغفك لإيجاد التوافق المثالي.</p>
+                <p>انتهى وقت اختيار المسار "بالحظ". مع NEXUS، نقوم بتحليل ملفك النفسي، درجاتك وشغفك لإيجاد التوافق المثالي.</p>
+            `,
+            en: `
+                <h2>The end of random "Tawjih"</h2>
+                <p>Gone are the days of choosing a path "randomly". With NEXUS, we analyze your psychological profile, your grades and your passions to find the perfect match.</p>
+                
+                <h2>Jobs that don't exist yet</h2>
+                <p>Did you know that 60% of 2030 jobs don't exist yet? Only an AI connected to global trends can prepare you for them.</p>
             `
         }
     }
