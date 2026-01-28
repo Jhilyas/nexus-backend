@@ -178,7 +178,7 @@ const Navbar = ({
                         className={`nav-link ${currentPage === 'blog' ? 'active' : ''}`}
                         onClick={() => { setCurrentPage('blog'); setMobileMenuOpen(false); }}
                     >
-                        📝 {language === 'fr' ? 'Blog' : 'ملف'}
+                        📝 {language === 'fr' ? 'Guides' : 'أدلة'}
                     </button>
                 </div>
 

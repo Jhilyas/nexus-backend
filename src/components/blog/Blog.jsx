@@ -10,7 +10,7 @@ const Blog = ({ language = 'fr', onPostClick }) => {
             <div className="container">
                 <header className="blog-header">
                     <h1 className="blog-title animate-fade-in-down">
-                        {language === 'fr' ? 'Blog & Conseils' : 'المدونة والنصائح'}
+                        {language === 'fr' ? 'Guides & Conseils' : 'أدلة ونصائح'}
                     </h1>
                     <p className="blog-subtitle animate-fade-in-up delay-100">
                         {language === 'fr'

@@ -11,7 +11,7 @@ const BlogPost = ({ postId, language = 'fr', onBack }) => {
     return (
         <div className={`blog-post-container ${isRTL ? 'rtl' : ''}`}>
             <button onClick={onBack} className="back-btn animate-fade-in">
-                <span>←</span> {language === 'fr' ? 'Retour au blog' : 'العودة للمدونة'}
+                <span>←</span> {language === 'fr' ? 'Retour aux guides' : 'العودة للدليل'}
             </button>
 
             <article className="animate-fade-in-up">
