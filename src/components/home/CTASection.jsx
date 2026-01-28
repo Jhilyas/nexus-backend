@@ -9,11 +9,15 @@ const translations = {
     ar: {
         title: 'ابدأ توجيه ما بعد الباك الآن!',
         cta: 'سجل على منصة NEXUS Morocco'
+    },
+    en: {
+        title: 'Start your post-baccalaureate orientation now!',
+        cta: 'Sign up for NEXUS Morocco'
     }
 };
 
 const CTASection = ({ onLogin, language = 'fr' }) => {
-    const t = translations[language];
+    const t = translations[language] || translations.fr;
     const isRTL = language === 'ar';
 
     return (

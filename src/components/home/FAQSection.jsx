@@ -12,7 +12,7 @@ const translations = {
             },
             {
                 q: "Quand utiliser NEXUS Morocco pour mon orientation ?",
-                a: "Utilisez NEXUS **avant** vos démarches administratives. Notre plateforme vous aide à clarifier votre projet personnel et choisir les meilleures filières. Ensuite, vous pourrez utiliser les portails nationaux comme Tawjihi pour vos inscriptions officielles en toute confiance."
+                a: "Utilisez NEXUS <strong>avant</strong> vos démarches administratives. Notre plateforme vous aide à clarifier votre projet personnel et choisir les meilleures filières. Ensuite, vous pourrez utiliser les portails nationaux comme Tawjihi pour vos inscriptions officielles en toute confiance."
             },
             {
                 q: "Comment fonctionne le test d'orientation IA ?",
@@ -38,7 +38,7 @@ const translations = {
             },
             {
                 q: "متى يجب استخدام NEXUS Morocco لتوجيهي؟",
-                a: "استخدم NEXUS **قبل** الإجراءات الإدارية. تساعدك منصتنا على توضيح مشروعك الشخصي واختيار أفضل المسارات. بعد ذلك، يمكنك استخدام البوابات الوطنية مثل توجيهي لتسجيلاتك الرسمية بكل ثقة."
+                a: "استخدم NEXUS <strong>قبل</strong> الإجراءات الإدارية. تساعدك منصتنا على توضيح مشروعك الشخصي واختيار أفضل المسارات. بعد ذلك، يمكنك استخدام البوابات الوطنية مثل توجيهي لتسجيلاتك الرسمية بكل ثقة."
             },
             {
                 q: "كيف يعمل اختبار التوجيه بالذكاء الاصطناعي؟",
@@ -53,11 +53,37 @@ const translations = {
                 a: "نعم، نسخة الاستكشاف مجانية 100%. تمنحك الوصول إلى الاختبارات الأساسية، استكشاف المدارس، و10 محادثات مع الموجه الذكي (AI Mentor). توجد خطط مدفوعة للمرافق غير المحدودة."
             }
         ]
+    },
+    en: {
+        title: 'Frequently Asked Questions (FAQ)',
+        subtitle: 'Everything you need to know about NEXUS and your Post-Bac orientation',
+        items: [
+            {
+                q: "What is NEXUS Morocco and how does it help me after bac?",
+                a: "NEXUS Morocco is an intelligent guidance platform that complements Tawjihi results. We use AI to analyze your profile and suggest the best schools, universities, and careers in Morocco suited to your skills and ambitions."
+            },
+            {
+                q: "When should I use NEXUS Morocco for my orientation?",
+                a: "Use NEXUS <strong>before</strong> your administrative procedures. Our platform helps you clarify your personal project and choose the best paths. Then, you can use national portals like Tawjihi for your official registrations with confidence."
+            },
+            {
+                q: "How does the AI orientation test work?",
+                a: "Our algorithm analyzes your answers about your passions, work style, and ambitions. It cross-references this data with Moroccan job market realities to offer you personalized paths (Engineering, Business, Medicine, etc.)."
+            },
+            {
+                q: "What types of schools are listed on NEXUS?",
+                a: "We list major public schools (ENSA, EST, ENCG, FST...) as well as the best private and international universities in Morocco (UIR, UM6P, Al Akhawayn...). You will find details on thresholds, competitions, and fees."
+            },
+            {
+                q: "Is platform access free?",
+                a: "Yes, the discovery version is 100% free. It gives you access to basic tests, school exploration, and 10 interactions with our AI Mentor and Voice AI. Premium plans exist for unlimited support."
+            }
+        ]
     }
 };
 
 const FAQSection = ({ language = 'fr' }) => {
-    const t = translations[language];
+    const t = translations[language] || translations.fr;
     const isRTL = language === 'ar';
     const [openIndex, setOpenIndex] = useState(null);
 

@@ -4,12 +4,11 @@ import './HomeSections.css';
 const translations = {
     fr: {
         title: 'Avantages de NEXUS Morocco',
-        description: 'NEXUS Morocco est la plateforme de référence pour l’orientation post-bac au Maroc. Grâce à nos outils intelligents, vous pouvez :',
+        description: "NEXUS Morocco est la plateforme de référence pour l'orientation post-bac au Maroc. Grâce à nos outils intelligents, vous pouvez :",
         items: [
-            'Optimiser votre parcours académique selon vos compétences et passions',
-
-            'Accéder à des recommandations pour les meilleures écoles et universités marocaines',
-            'Recevoir un accompagnement personnalisé pour réussir votre orientation post-bac'
+            "Optimiser votre parcours académique selon vos compétences et passions",
+            "Accéder à des recommandations pour les meilleures écoles et universités marocaines",
+            "Recevoir un accompagnement personnalisé pour réussir votre orientation post-bac"
         ]
     },
     ar: {
@@ -17,15 +16,23 @@ const translations = {
         description: 'NEXUS Morocco هي المنصة المرجعية لتوجيه ما بعد الباك في المغرب. باستخدام أدواتنا الذكية، يمكنك:',
         items: [
             'تحسين مسارك الأكاديمي وفق مهاراتك واهتماماتك',
-
             'الوصول إلى توصيات لأفضل المدارس والجامعات المغربية',
             'الحصول على دعم شخصي للنجاح في توجيه ما بعد الباك'
+        ]
+    },
+    en: {
+        title: 'Advantages of NEXUS Morocco',
+        description: 'NEXUS Morocco is the reference platform for post-baccalaureate orientation in Morocco. With our intelligent tools, you can:',
+        items: [
+            'Optimize your academic path according to your skills and passions',
+            'Access recommendations for the best Moroccan schools and universities',
+            'Receive personalized support to succeed in your post-baccalaureate orientation'
         ]
     }
 };
 
 const AdvantagesSection = ({ language = 'fr' }) => {
-    const t = translations[language];
+    const t = translations[language] || translations.fr;
     const isRTL = language === 'ar';
 
     return (

@@ -136,7 +136,7 @@ const translations = {
 }
 
 const FeaturesSection = ({ language = 'fr' }) => {
-    const t = translations[language]
+    const t = translations[language] || translations.fr
     const isRTL = language === 'ar'
 
     return (

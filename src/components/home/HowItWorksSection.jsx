@@ -5,10 +5,10 @@ const translations = {
     fr: {
         title: 'Comment fonctionne NEXUS Morocco ?',
         steps: [
-            'Évaluez vos compétences et centres d’intérêt via notre test en ligne',
-            'Découvrez les parcours scolaires et universitaires adaptés à votre profil',
-            'Recevez un plan personnalisé avec les écoles et formations recommandées',
-            'Inscrivez-vous aux programmes et débutez votre orientation post-bac'
+            "Évaluez vos compétences et centres d'intérêt via notre test en ligne",
+            "Découvrez les parcours scolaires et universitaires adaptés à votre profil",
+            "Recevez un plan personnalisé avec les écoles et formations recommandées",
+            "Inscrivez-vous aux programmes et débutez votre orientation post-bac"
         ]
     },
     ar: {
@@ -19,11 +19,20 @@ const translations = {
             'احصل على خطة مخصصة تشمل المدارس والمسارات الموصى بها',
             'سجل في البرامج وابدأ توجيه ما بعد الباك الخاص بك'
         ]
+    },
+    en: {
+        title: 'How does NEXUS Morocco work?',
+        steps: [
+            'Assess your skills and interests through our online test',
+            'Discover academic and university paths suited to your profile',
+            'Receive a personalized plan with recommended schools and programs',
+            'Register for programs and start your post-baccalaureate orientation'
+        ]
     }
 };
 
 const HowItWorksSection = ({ language = 'fr' }) => {
-    const t = translations[language];
+    const t = translations[language] || translations.fr;
     const isRTL = language === 'ar';
 
     return (

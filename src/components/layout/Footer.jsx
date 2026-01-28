@@ -67,7 +67,7 @@ const translations = {
 }
 
 const Footer = ({ language = 'fr' }) => {
-    const t = translations[language]
+    const t = translations[language] || translations.fr
     const isRTL = language === 'ar'
 
     return (

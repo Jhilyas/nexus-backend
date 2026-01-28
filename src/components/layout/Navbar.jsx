@@ -102,7 +102,7 @@ const Navbar = ({
 }) => {
     const [scrolled, setScrolled] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const t = translations[language]
+    const t = translations[language] || translations.fr
 
     useEffect(() => {
         const handleScroll = () => {

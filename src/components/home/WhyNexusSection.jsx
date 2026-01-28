@@ -5,11 +5,10 @@ const translations = {
     fr: {
         title: 'Pourquoi choisir NEXUS Morocco ?',
         items: [
-            'Plateforme d’orientation post-bac au Maroc adaptée aux étudiants (Tawjih et après bac)',
-            'Évaluation complète des compétences et intérêts pour un choix de parcours précis',
-            'Recommandations personnalisées pour les écoles, universités et formations spécialisées',
-            'Support bilingue : Français & Arabe',
-
+            "Plateforme d'orientation post-bac au Maroc adaptée aux étudiants (Tawjih et après bac)",
+            "Évaluation complète des compétences et intérêts pour un choix de parcours précis",
+            "Recommandations personnalisées pour les écoles, universités et formations spécialisées",
+            "Support bilingue : Français & Arabe"
         ]
     },
     ar: {
@@ -18,14 +17,22 @@ const translations = {
             'منصة توجيه ما بعد الباك في المغرب مناسبة للطلاب (توجيهي وما بعد الباك)',
             'تقييم شامل للمهارات والاهتمامات لاختيار المسار الأكاديمي بدقة',
             'توصيات مخصصة للمدارس والجامعات والمسارات المتخصصة',
-            'دعم باللغتين العربية والفرنسية',
-
+            'دعم باللغتين العربية والفرنسية'
+        ]
+    },
+    en: {
+        title: 'Why choose NEXUS Morocco?',
+        items: [
+            'Post-baccalaureate orientation platform in Morocco adapted for students (Tawjihi and after bac)',
+            'Comprehensive assessment of skills and interests for precise career path selection',
+            'Personalized recommendations for schools, universities, and specialized programs',
+            'Bilingual support: French & Arabic'
         ]
     }
 };
 
 const WhyNexusSection = ({ language = 'fr' }) => {
-    const t = translations[language];
+    const t = translations[language] || translations.fr;
     const isRTL = language === 'ar';
 
     return (
