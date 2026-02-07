@@ -182,11 +182,11 @@ class BrowserSTT {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AI RESPONSES - Groq LLaMA 3.3 via Backend
-// 🧠 REAL AI responses from Groq (Ultra Fast & FREE!)
+// AI RESPONSES - Puter.js Gemini AI (FREE & UNLIMITED!)
+// 🧠 REAL AI responses from Gemini (Ultra Fast & FREE!)
 // ═══════════════════════════════════════════════════════════════
 
-class GroqChat {
+class PuterChat {
     constructor() {
         this.conversationHistory = [];
         this.systemPrompt = `Tu es un ami conseiller pour étudiants marocains.
@@ -204,7 +204,7 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
 
     async getResponse(userMessage, detectedLanguage = null) {
         console.log('═══════════════════════════════════════════');
-        console.log('🧠 GROQ CHAT - Getting AI Response via Supabase Edge Function');
+        console.log('🧠 PUTER CHAT - Getting AI Response via Gemini (FREE!)');
         console.log(`📝 User said: "${userMessage}"`);
         console.log(`🌍 Language: ${detectedLanguage}`);
         console.log('═══════════════════════════════════════════');
@@ -220,35 +220,31 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
             this.conversationHistory = this.conversationHistory.slice(-10);
         }
 
-        // Language mapping
-        const langMap = {
-            'french': 'fr',
-            'arabic': 'ar',
-            'english': 'en'
+        // Language instruction
+        const langInstructions = {
+            'french': 'Réponds en français.',
+            'arabic': 'أجب بالعربية.',
+            'english': 'Reply in English.'
         };
-        const language = langMap[detectedLanguage?.toLowerCase()] || 'fr';
+        const langInstruction = langInstructions[detectedLanguage?.toLowerCase()] || langInstructions.french;
 
         try {
-            // Import supabase dynamically to avoid circular imports
-            const { supabase } = await import('./supabase.js');
+            // Format conversation history
+            const contextMessages = this.conversationHistory
+                .slice(0, -1)
+                .map(msg => `${msg.role === 'assistant' ? 'Toi' : 'Utilisateur'}: ${msg.content}`)
+                .join('\n');
 
-            console.log('📤 Calling Supabase Edge Function (ai-chat)...');
+            const fullPrompt = contextMessages
+                ? `${this.systemPrompt}\n\n${langInstruction}\n\nHistorique:\n${contextMessages}\n\nUtilisateur: ${userMessage}\n\nToi:`
+                : `${this.systemPrompt}\n\n${langInstruction}\n\nUtilisateur: ${userMessage}\n\nToi:`;
 
-            const { data, error } = await supabase.functions.invoke('ai-chat', {
-                body: {
-                    message: userMessage,
-                    conversationHistory: this.conversationHistory.slice(0, -1),
-                    mode: 'mentor',
-                    language: language
-                }
+            console.log('📤 Calling Puter.js Gemini AI (FREE!)...');
+
+            // Call Puter.js Gemini AI - FREE & UNLIMITED!
+            const aiMessage = await window.puter.ai.chat(fullPrompt, {
+                model: 'gemini-2.5-flash'
             });
-
-            if (error) {
-                console.error('❌ Edge Function Error:', error);
-                throw error;
-            }
-
-            const aiMessage = data.response;
 
             if (!aiMessage) {
                 throw new Error('Empty response from AI');
@@ -266,7 +262,7 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
             return aiMessage;
 
         } catch (error) {
-            console.error('❌ Groq Chat Error:', error);
+            console.error('❌ Puter Chat Error:', error);
             return "Désolé, erreur de connexion. Réessaie dans un instant!";
         }
     }
@@ -279,6 +275,9 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
         return this.conversationHistory;
     }
 }
+
+// Keep GroqChat as alias for backwards compatibility
+const GroqChat = PuterChat;
 
 // ═══════════════════════════════════════════════════════════════
 // TEXT-TO-SPEECH (TTS) - ElevenLabs
@@ -405,19 +404,19 @@ class ElevenLabsTTS {
 
 // ═══════════════════════════════════════════════════════════════
 // UNIFIED VOICE AI SERVICE
-// Browser STT → Groq LLaMA 3.3 → ElevenLabs TTS
+// Browser STT → Puter.js Gemini AI → ElevenLabs TTS
 // ═══════════════════════════════════════════════════════════════
 
 class VoiceAIService {
     constructor() {
         this.stt = new BrowserSTT();
-        this.chat = new GroqChat();
+        this.chat = new PuterChat();
         this.tts = new ElevenLabsTTS();
         this.lastDetectedLanguage = null;
 
         console.log('🎯 Voice AI Service Ready');
         console.log('   📍 STT: Browser Web Speech API (FREE!)');
-        console.log('   📍 AI: Groq LLaMA 3.3 (Ultra Fast & FREE!)');
+        console.log('   📍 AI: Puter.js Gemini (FREE & UNLIMITED!)');
         console.log('   📍 TTS: ElevenLabs (100% French voice!)');
     }
 
@@ -473,5 +472,5 @@ class VoiceAIService {
 // Export singleton
 export const voiceAI = new VoiceAIService();
 
-// Export for compatibility (GroqChat replaces OpenAIChat)
-export { BrowserSTT, GroqChat, GroqChat as OpenAIChat, ElevenLabsTTS, VoiceAIService, FRENCH_VOICES };
+// Export for compatibility (PuterChat replaces GroqChat/OpenAIChat)
+export { BrowserSTT, PuterChat, PuterChat as GroqChat, PuterChat as OpenAIChat, ElevenLabsTTS, VoiceAIService, FRENCH_VOICES };

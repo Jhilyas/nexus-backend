@@ -254,27 +254,65 @@ export const db = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// AI CHAT (Via Supabase Edge Function)
+// AI CHAT (Via Puter.js - FREE Unlimited Gemini AI!)
 // ═══════════════════════════════════════════════════════════════
+
+const SAGE_SYSTEM_PROMPT = `Tu es SAGE, l'assistant IA de NEXUS, la plateforme d'orientation éducative au Maroc.
+
+Ton rôle:
+- Guider les étudiants dans leur parcours post-baccalauréat
+- Fournir des informations sur les écoles, programmes et carrières au Maroc
+- Être supportif, knowledgeable, et encourageant
+
+Tes connaissances:
+- Système éducatif marocain (Classes Préparatoires, Grandes Écoles, Universités)
+- Écoles: ENSIAS, EMI, INPT, ENCG, ENSAM, UM6P, HEM, EHTP, ISCAE, etc.
+- Concours: CNC, TAFEM, concours spécifiques
+- Carrières et salaires au Maroc
+- Bourses et aides financières
+
+Règles IMPORTANTES:
+- Tu dois répondre de manière ULTRA CONCISE (2-3 phrases maximum).
+- Réponds dans la même langue que l'utilisateur (français, arabe ou anglais).
+- Sois direct et utile. Pas de blabla.
+- Utilise des emojis avec modération.`;
+
+const MODE_PROMPTS = {
+    mentor: 'Tu es un mentor éducatif professionnel et sage.',
+    friend: 'Tu es un ami proche. Tu parles de manière décontractée.',
+    motivator: 'Tu es un coach motivant! Tu encourages avec énergie!',
+    calm: 'Tu es calme et rassurant.'
+};
 
 export const ai = {
     async chat(message, conversationHistory = [], mode = 'mentor', language = 'fr') {
         try {
-            // Call Supabase Edge Function
-            const { data, error } = await supabase.functions.invoke('ai-chat', {
-                body: {
-                    message,
-                    conversationHistory,
-                    mode,
-                    language
-                }
+            console.log('🧠 NEXUS AI: Using Puter.js Gemini (FREE & UNLIMITED!)');
+
+            // Build the conversation context
+            const modePrompt = MODE_PROMPTS[mode] || MODE_PROMPTS.mentor;
+            const systemInstruction = `${SAGE_SYSTEM_PROMPT}\n\nMode actuel: ${modePrompt}\nRAPPEL: SOIS BREF.`;
+
+            // Format conversation history
+            const contextMessages = conversationHistory
+                .slice(-8)
+                .map(msg => `${msg.role === 'assistant' ? 'SAGE' : 'Utilisateur'}: ${msg.content}`)
+                .join('\n');
+
+            const fullPrompt = contextMessages
+                ? `${systemInstruction}\n\nHistorique de conversation:\n${contextMessages}\n\nUtilisateur: ${message}\n\nSAGE:`
+                : `${systemInstruction}\n\nUtilisateur: ${message}\n\nSAGE:`;
+
+            // Call Puter.js Gemini AI - FREE & UNLIMITED!
+            const response = await window.puter.ai.chat(fullPrompt, {
+                model: 'gemini-2.5-flash'
             });
 
-            if (error) throw error;
+            console.log('✅ Gemini Response received:', response);
 
             return {
-                success: data.success,
-                response: data.response
+                success: true,
+                response: response
             };
         } catch (error) {
             console.error('AI Chat Error:', error);

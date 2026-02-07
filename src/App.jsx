@@ -175,7 +175,10 @@ function App() {
         return (
           <>
             <HeroSection
-              onExplore={() => setCurrentPage('orientation')}
+              onExplore={() => {
+                const section = document.getElementById('pourquoi-nexus');
+                if (section) section.scrollIntoView({ behavior: 'smooth' });
+              }}
               onLogin={handleLogin}
               language={language}
             />

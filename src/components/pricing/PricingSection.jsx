@@ -693,7 +693,7 @@ const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => 
             id: 'user_' + Date.now(),
             name: userName.trim(),
             email: userName.trim().toLowerCase().replace(/\s+/g, '.') + '@nexus.ma',
-            plan: selectedPlan,
+            subscription: selectedPlan,
             createdAt: new Date().toISOString()
         }
 
@@ -713,7 +713,7 @@ const PricingSection = ({ language = 'fr', user = null, onLoginRequired = () => 
         if (savedUser) {
             try {
                 const parsedUser = JSON.parse(savedUser)
-                parsedUser.plan = planId
+                parsedUser.subscription = planId
                 localStorage.setItem('nexus_user', JSON.stringify(parsedUser))
             } catch (e) {
                 console.error('Error updating plan:', e)
