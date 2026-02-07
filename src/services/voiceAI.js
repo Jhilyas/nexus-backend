@@ -182,45 +182,41 @@ class BrowserSTT {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AI RESPONSES - Puter.js Gemini AI (FREE & UNLIMITED!)
-// 🧠 REAL AI responses from Gemini (Ultra Fast & FREE!)
+// AI RESPONSES - Groq LLaMA 3.3 (FREE & ULTRA FAST!)
+// 🧠 REAL AI responses from Groq (Ultra Fast & FREE!)
 // ═══════════════════════════════════════════════════════════════
 
-class PuterChat {
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+
+class GroqChat {
     constructor() {
         this.conversationHistory = [];
         this.systemPrompt = `Tu es un ami conseiller pour étudiants marocains.
 
-RÈGLE: 2-3 phrases courtes MAX selon le contexte. Pas de listes!
+RÈGLE ABSOLUE: Maximum 2 phrases courtes. Pas plus!
 
-SI TU NE SAIS PAS: "Je ne connais pas ça, désolé!"
-
-EXEMPLES:
+Exemples:
 "L'ENSIAS c'est top pour l'info! Tu vises quel métier?"
-"Le CNC c'est dur mais faisable. Faut bien bosser les maths!"
+"Le CNC demande 2 ans de prépa. Faut bien bosser les maths 💪"
 
 Langue = celle de l'utilisateur. Sois naturel et bref!`;
     }
 
     async getResponse(userMessage, detectedLanguage = null) {
         console.log('═══════════════════════════════════════════');
-        console.log('🧠 PUTER CHAT - Getting AI Response via Gemini (FREE!)');
+        console.log('🧠 GROQ CHAT - Getting AI Response (FREE!)');
         console.log(`📝 User said: "${userMessage}"`);
-        console.log(`🌍 Language: ${detectedLanguage}`);
         console.log('═══════════════════════════════════════════');
 
-        // Add to history
         this.conversationHistory.push({
             role: 'user',
             content: userMessage
         });
 
-        // Keep last 10 messages
         if (this.conversationHistory.length > 10) {
             this.conversationHistory = this.conversationHistory.slice(-10);
         }
 
-        // Language instruction
         const langInstructions = {
             'french': 'Réponds en français.',
             'arabic': 'أجب بالعربية.',
@@ -229,30 +225,40 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
         const langInstruction = langInstructions[detectedLanguage?.toLowerCase()] || langInstructions.french;
 
         try {
-            // Format conversation history
-            const contextMessages = this.conversationHistory
-                .slice(0, -1)
-                .map(msg => `${msg.role === 'assistant' ? 'Toi' : 'Utilisateur'}: ${msg.content}`)
-                .join('\n');
+            const messages = [
+                { role: 'system', content: `${this.systemPrompt}\n\n${langInstruction}` },
+                ...this.conversationHistory.slice(-6).map(msg => ({
+                    role: msg.role,
+                    content: msg.content
+                }))
+            ];
 
-            const fullPrompt = contextMessages
-                ? `${this.systemPrompt}\n\n${langInstruction}\n\nHistorique:\n${contextMessages}\n\nUtilisateur: ${userMessage}\n\nToi:`
-                : `${this.systemPrompt}\n\n${langInstruction}\n\nUtilisateur: ${userMessage}\n\nToi:`;
-
-            console.log('📤 Calling Puter.js Gemini AI (FREE!)...');
-
-            // Call Puter.js Gemini AI - FREE & UNLIMITED!
-            const aiMessage = await window.puter.ai.chat(fullPrompt, {
-                model: 'gemini-2.5-flash'
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: messages,
+                    max_tokens: 150,
+                    temperature: 0.7
+                })
             });
+
+            if (!response.ok) {
+                throw new Error(`Groq API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const aiMessage = data.choices[0]?.message?.content;
 
             if (!aiMessage) {
                 throw new Error('Empty response from AI');
             }
 
-            console.log('═══════════════════════════════════════════');
             console.log(`✅ AI RESPONSE: "${aiMessage}"`);
-            console.log('═══════════════════════════════════════════');
 
             this.conversationHistory.push({
                 role: 'assistant',
@@ -262,8 +268,8 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
             return aiMessage;
 
         } catch (error) {
-            console.error('❌ Puter Chat Error:', error);
-            return "Désolé, erreur de connexion. Réessaie dans un instant!";
+            console.error('❌ Groq Chat Error:', error);
+            return "Désolé, erreur de connexion. Réessaie! 🔄";
         }
     }
 
@@ -276,8 +282,8 @@ Langue = celle de l'utilisateur. Sois naturel et bref!`;
     }
 }
 
-// Keep GroqChat as alias for backwards compatibility
-const GroqChat = PuterChat;
+// Alias for backwards compatibility
+const PuterChat = GroqChat;
 
 // ═══════════════════════════════════════════════════════════════
 // TEXT-TO-SPEECH (TTS) - ElevenLabs
@@ -404,20 +410,20 @@ class ElevenLabsTTS {
 
 // ═══════════════════════════════════════════════════════════════
 // UNIFIED VOICE AI SERVICE
-// Browser STT → Puter.js Gemini AI → ElevenLabs TTS
+// Browser STT → Groq LLaMA 3.3 → ElevenLabs TTS
 // ═══════════════════════════════════════════════════════════════
 
 class VoiceAIService {
     constructor() {
         this.stt = new BrowserSTT();
-        this.chat = new PuterChat();
+        this.chat = new GroqChat();
         this.tts = new ElevenLabsTTS();
         this.lastDetectedLanguage = null;
 
         console.log('🎯 Voice AI Service Ready');
         console.log('   📍 STT: Browser Web Speech API (FREE!)');
-        console.log('   📍 AI: Puter.js Gemini (FREE & UNLIMITED!)');
-        console.log('   📍 TTS: ElevenLabs (100% French voice!)');
+        console.log('   📍 AI: Groq LLaMA 3.3 (FREE & FAST!)');
+        console.log('   📍 TTS: ElevenLabs (French voice!)');
     }
 
     async startListening(options) {

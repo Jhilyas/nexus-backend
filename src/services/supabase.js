@@ -254,74 +254,82 @@ export const db = {
 };
 
 // ═══════════════════════════════════════════════════════════════
-// AI CHAT (Via Puter.js - FREE Unlimited Gemini AI!)
+// AI CHAT (Via Groq LLaMA 3.3 - FREE & ULTRA FAST!)
 // ═══════════════════════════════════════════════════════════════
 
-const SAGE_SYSTEM_PROMPT = `Tu es SAGE, l'assistant IA de NEXUS, la plateforme d'orientation éducative au Maroc.
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
-Ton rôle:
-- Guider les étudiants dans leur parcours post-baccalauréat
-- Fournir des informations sur les écoles, programmes et carrières au Maroc
-- Être supportif, knowledgeable, et encourageant
+const SAGE_SYSTEM_PROMPT = `Tu es SAGE, assistant IA de NEXUS pour l'orientation au Maroc.
 
-Tes connaissances:
-- Système éducatif marocain (Classes Préparatoires, Grandes Écoles, Universités)
-- Écoles: ENSIAS, EMI, INPT, ENCG, ENSAM, UM6P, HEM, EHTP, ISCAE, etc.
-- Concours: CNC, TAFEM, concours spécifiques
-- Carrières et salaires au Maroc
-- Bourses et aides financières
+RÈGLE ABSOLUE: Maximum 2 phrases courtes par réponse. Pas plus!
 
-Règles IMPORTANTES:
-- Tu dois répondre de manière ULTRA CONCISE (2-3 phrases maximum).
-- Réponds dans la même langue que l'utilisateur (français, arabe ou anglais).
-- Sois direct et utile. Pas de blabla.
-- Utilise des emojis avec modération.`;
+Tes connaissances: écoles (ENSIAS, EMI, INPT, ENCG, ENSAM, UM6P), concours (CNC, TAFEM), carrières au Maroc.
+
+Exemples de bonnes réponses:
+- "L'ENSIAS est top pour l'informatique! Tu as quel niveau en maths?"
+- "Le CNC demande 2 ans de prépa. Je te conseille de bien bosser la physique 💪"
+
+Réponds dans la langue de l'utilisateur. Sois bref et utile!`;
 
 const MODE_PROMPTS = {
-    mentor: 'Tu es un mentor éducatif professionnel et sage.',
-    friend: 'Tu es un ami proche. Tu parles de manière décontractée.',
-    motivator: 'Tu es un coach motivant! Tu encourages avec énergie!',
-    calm: 'Tu es calme et rassurant.'
+    mentor: 'Sois professionnel et sage.',
+    friend: 'Sois décontracté et amical.',
+    motivator: 'Sois motivant et énergique!',
+    calm: 'Sois calme et rassurant.'
 };
 
 export const ai = {
     async chat(message, conversationHistory = [], mode = 'mentor', language = 'fr') {
         try {
-            console.log('🧠 NEXUS AI: Using Puter.js Gemini (FREE & UNLIMITED!)');
+            console.log('🧠 NEXUS AI: Using Groq LLaMA 3.3 (FREE!)');
 
-            // Build the conversation context
             const modePrompt = MODE_PROMPTS[mode] || MODE_PROMPTS.mentor;
-            const systemInstruction = `${SAGE_SYSTEM_PROMPT}\n\nMode actuel: ${modePrompt}\nRAPPEL: SOIS BREF.`;
+            const systemInstruction = `${SAGE_SYSTEM_PROMPT}\n\nMode: ${modePrompt}`;
 
-            // Format conversation history
-            const contextMessages = conversationHistory
-                .slice(-8)
-                .map(msg => `${msg.role === 'assistant' ? 'SAGE' : 'Utilisateur'}: ${msg.content}`)
-                .join('\n');
+            const messages = [
+                { role: 'system', content: systemInstruction },
+                ...conversationHistory.slice(-6).map(msg => ({
+                    role: msg.role === 'assistant' ? 'assistant' : 'user',
+                    content: msg.content
+                })),
+                { role: 'user', content: message }
+            ];
 
-            const fullPrompt = contextMessages
-                ? `${systemInstruction}\n\nHistorique de conversation:\n${contextMessages}\n\nUtilisateur: ${message}\n\nSAGE:`
-                : `${systemInstruction}\n\nUtilisateur: ${message}\n\nSAGE:`;
-
-            // Call Puter.js Gemini AI - FREE & UNLIMITED!
-            const response = await window.puter.ai.chat(fullPrompt, {
-                model: 'gemini-2.5-flash'
+            // Call Groq API - FREE & ULTRA FAST!
+            const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${GROQ_API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: messages,
+                    max_tokens: 150,
+                    temperature: 0.7
+                })
             });
 
-            console.log('✅ Gemini Response received:', response);
+            if (!response.ok) {
+                throw new Error(`Groq API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const reply = data.choices[0]?.message?.content;
+
+            console.log('✅ Groq Response:', reply);
 
             return {
                 success: true,
-                response: response
+                response: reply
             };
         } catch (error) {
             console.error('AI Chat Error:', error);
 
-            // Fallback responses
             const fallbackResponses = {
-                fr: "Désolé, je rencontre des difficultés techniques. Pouvez-vous reformuler ?",
-                ar: "أعتذر، أواجه صعوبات تقنية. هل يمكنك إعادة صياغة سؤالك؟",
-                en: "Sorry, I'm experiencing technical difficulties. Could you rephrase?"
+                fr: "Désolé, petite erreur technique. Réessaie! 🔄",
+                ar: "عذراً، خطأ تقني بسيط. حاول مرة أخرى! 🔄",
+                en: "Sorry, small technical error. Try again! 🔄"
             };
 
             return {
